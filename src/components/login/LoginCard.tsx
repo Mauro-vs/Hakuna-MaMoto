@@ -1,12 +1,12 @@
 import React  from "react";
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
-import LoginIcon from "../hooks/login/loginIcon";
+import LoginIcon from "./loginIcon";
 import { TextInput } from "react-native-paper";
-import ButtonGeneral from "../hooks/login/button";
+import ButtonGeneral from "./button";
 
 export const LoginCard = () => {
   return (
-    <View>
+    <View style={s.viewCard}>
         {/* Inicio de la pantalla */}
         <LoginIcon />
         <Text style={s.titulo}>Bienvenido</Text>
@@ -70,6 +70,13 @@ export const LoginCard = () => {
 
 // ESTILOS
 const s = StyleSheet.create({
+    viewCard: {
+        width: 350,
+        padding: 20,
+        margin: 20,
+        borderRadius: 10,
+        backgroundColor: "#ffffff",
+    },
      titulo: {
         fontSize: 24,
         fontWeight: "bold",
