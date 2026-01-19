@@ -1,10 +1,15 @@
-import React from "react";
+import { useRouter } from "expo-router";
+import React, { use } from "react";
 import { View,Text, StyleSheet, Pressable } from "react-native";
 
 const ButtonGeneral = () => {
+  const router = useRouter();
+  const handleLogin = () => {
+    router.replace('/home');
+  }
   return (
     <View>
-        <Pressable style={s.button}><Text style={s.buttonText}>Iniciar Sesión</Text></Pressable>
+        <Pressable style={s.button} onPress={handleLogin}><Text style={s.buttonText}>Iniciar Sesión</Text></Pressable>
     </View>
   )
 }

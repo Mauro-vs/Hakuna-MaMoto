@@ -1,41 +1,43 @@
 import React  from "react";
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
-import LoginIcon from "./loginIcon";
 import { TextInput } from "react-native-paper";
+import LoginIcon from "./loginIcon";
 import ButtonGeneral from "./button";
 
 export const LoginCard = () => {
   return (
-    <View style={s.viewCard}>
+    <View style={{flex: 1, width: '80%', maxWidth: 400}}>
+        <View style={{height: 100}} />
+
         {/* Inicio de la pantalla */}
         <LoginIcon />
-        <Text style={s.titulo}>Bienvenido</Text>
-        <Text style={s.subtitulo}>Introduce tus credenciales para continuar</Text>
+        <Text style={styles.titulo}>Bienvenido</Text>
+        <Text style={styles.subtitulo}>Introduce tus credenciales para continuar</Text>
 
         {/* Campos de entrada */}
-        <Text style={s.inputText}>Correo Electrónico</Text>
+        <Text style={styles.inputText}>Correo Electrónico</Text>
         <TextInput
             mode="outlined"
             placeholder="nombre@ejemplo.com"
             placeholderTextColor="#b4b4b4"
             outlineColor="#dcdcdc"
             activeOutlineColor="#4f46e5"
-            style={s.paperInput}
+            style={styles.paperInput}
             left={<TextInput.Icon icon="email-outline" color="#b4b4b4" size={20} />}
         />
 
         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 15}}>
-            <Text style={s.inputText}>Contraseña</Text>
-            <Text style={s.inputTextPassword} onPress={() => {}}>¿Olvidaste tu contraseña?</Text>
+            <Text style={styles.inputText}>Contraseña</Text>
+            <Text style={styles.inputTextPassword} onPress={() => {}}>¿Olvidaste tu contraseña?</Text>
         </View>
         <TextInput
             mode="outlined"
-            placeholder="********   "
+            placeholder="********"
             secureTextEntry={true}
             placeholderTextColor="#b4b4b4"
             outlineColor="#dcdcdc"
             activeOutlineColor="#4f46e5"
-            style={s.paperInput}
+            style={styles.paperInput}
             left={<TextInput.Icon icon="lock-outline" color="#b4b4b4" size={20} />}
         />
 
@@ -44,15 +46,14 @@ export const LoginCard = () => {
 
         {/* Separador */}
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20}}>
-            <View style={s.separatorLine} />
-            <Text style={s.separatorText}>O continua con</Text>
-            <View style={s.separatorLine} />
+            <View style={styles.separatorLine} />
+            <Text style={styles.separatorText}>O continua con</Text>
+            <View style={styles.separatorLine} />
         </View>
 
-        <View style={{height: 20}} /> {/* Espaciador */}
+        <View style={{height: 20}} />
 
-        {/* Botón de Google */}
-        <Pressable style={s.buttonG}>
+        <Pressable style={styles.buttonG}>
             <Image
                 source={require('C:\\Users\\mauro\\Documents\\DAM-PmDm\\REACT\\myAppProject\\assets\\google.png')}
                 style={{ width: 18, height: 18, marginRight: 10 }}
@@ -61,22 +62,15 @@ export const LoginCard = () => {
         </Pressable>
 
         <View style={{flexDirection: "row", alignSelf: "center", marginTop: 15}}>
-            <Text style={[s.inputText, {fontWeight: "600"}]}>¿No tienes una cuenta? </Text>
-            <Text style={s.inputTextPassword} onPress={() => {}}>Regístrate ahora</Text>
+            <Text style={[styles.inputText, {fontWeight: "600"}]}>¿No tienes una cuenta? </Text>
+            <Text style={styles.inputTextPassword} onPress={() => {}}>Regístrate ahora</Text>
         </View>
     </View>
   );
 };
 
 // ESTILOS
-const s = StyleSheet.create({
-    viewCard: {
-        width: 350,
-        padding: 20,
-        margin: 20,
-        borderRadius: 10,
-        backgroundColor: "#ffffff",
-    },
+const styles = StyleSheet.create({
      titulo: {
         fontSize: 24,
         fontWeight: "bold",
@@ -106,7 +100,7 @@ const s = StyleSheet.create({
         fontSize: 15,
     },
     buttonG: {
-        height: 38,
+        height: 45,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
