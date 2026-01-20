@@ -58,6 +58,8 @@ export default function HomeClientes() {
           visible={visible}
           setVisible={setVisible}
           onSave={(nuevoCliente) => {
+            // Guardamos en el servicio para que la pantalla [id] pueda encontrarlo
+            clientesService.addCliente(nuevoCliente);
             // Actualizamos la lista y la UI
             setList((prev) => [...prev, nuevoCliente]);
           }}

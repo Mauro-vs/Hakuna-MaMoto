@@ -9,9 +9,11 @@ import {
   Pressable,
   Platform,
   KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import { useState } from "react";
 import { Cliente } from "../../data/Clientes";
+import { mainThemeColors } from "../../theme";
 
 export const PopUpCrear = ({
   visible,
@@ -32,11 +34,30 @@ export const PopUpCrear = ({
   const handleSave = () => {
     if (!nombre || !apellido || !email) return;
 
-    let newId = Math.floor(Math.random() * 1000000);
+    let newId = Math.floor(Math.random() * 1000);
     while (existingClientes.some((c) => c.id === newId)) {
-      newId = Math.floor(Math.random() * 1000000);
+      newId = Math.floor(Math.random() * 10000);
     }
 
+    //Validaciones básicas
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const telefonoRegex = /^[0-9]{9}$/;
+    if (!emailRegex.test(email)) {
+      alert("Por favor, introduce un correo electrónico válido.");
+      return;
+    }
+    if (telefono && !telefonoRegex.test(telefono)) {
+      alert("Por favor, introduce un número de teléfono válido (formato: 600123456).");
+      return;
+    }
+
+    //Validacion de duplicados
+    if (existingClientes.some(c => c.email.toLowerCase() === email.toLowerCase())) {
+      alert("Ya existe un cliente con este correo electrónico.");
+      return;
+    }
+
+    // Creamos el nuevo cliente
     const nuevoCliente: Cliente = {
       id: newId,
       name: nombre,
@@ -68,45 +89,48 @@ export const PopUpCrear = ({
       <Modal transparent animationType="fade" visible={visible}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-          keyboardVerticalOffset={1}
+          style={{ flex: 1, backgroundColor: "transparent" }}
         >
-          <Pressable style={s.overlay} onPress={() => setVisible(false)}>
-            <Pressable style={s.popup}>
-              <Text style={s.title}>Nuevo cliente</Text>
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <Pressable style={s.overlay} onPress={() => setVisible(false)}>
+              <Pressable style={s.popup} onPress={() => {}}>
+                <Text style={s.title}>Nuevo cliente</Text>
 
               <Text style={s.lblTitle}>Nombre</Text>
               <View style={s.inputFondo}>
-                <Feather name="user" size={18} color="#9ca3af" />
+                <Feather name="user" size={18} color={mainThemeColors.grayText} />
                 <TextInput
                   value={nombre}
                   onChangeText={setNombre}
                   placeholder="Juan"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={mainThemeColors.grayText}
                   style={s.input}
                 />
               </View>
 
               <Text style={s.lblTitle}>Apellido</Text>
               <View style={s.inputFondo}>
-                <Feather name="user" size={18} color="#9ca3af" />
+                <Feather name="user" size={18} color={mainThemeColors.grayText} />
                 <TextInput
                   value={apellido}
                   onChangeText={setApellido}
                   placeholder="Pérez"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={mainThemeColors.grayText}
                   style={s.input}
                 />
               </View>
 
               <Text style={s.lblTitle}>Correo electrónico</Text>
               <View style={s.inputFondo}>
-                <Feather name="mail" size={18} color="#9ca3af" />
+                <Feather name="mail" size={18} color={mainThemeColors.grayText} />
                 <TextInput
                   value={email}
                   onChangeText={setEmail}
                   placeholder="correo@ejemplo.com"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={mainThemeColors.grayText}
                   keyboardType="email-address"
                   style={s.input}
                 />
@@ -114,7 +138,7 @@ export const PopUpCrear = ({
 
               <Text style={s.lblTitle}>Teléfono</Text>
               <View style={s.inputFondo}>
-                <Feather name="phone" size={18} color="#9ca3af" />
+                <Feather name="phone" size={18} color={mainThemeColors.grayText} />
                 <TextInput
                   value={telefono}
                   onChangeText={setTelefono}
@@ -139,6 +163,7 @@ export const PopUpCrear = ({
               </View>
             </Pressable>
           </Pressable>
+          </ScrollView>
         </KeyboardAvoidingView>
       </Modal>
     </>
@@ -150,7 +175,7 @@ const s = StyleSheet.create({
     position: "absolute",
     bottom: 24,
     right: 24,
-    backgroundColor: "#2563eb",
+    backgroundColor: mainThemeColors.primaryBlue,
     width: 56,
     height: 56,
     borderRadius: 16,
@@ -160,7 +185,7 @@ const s = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.45)",
+    backgroundColor: "rgba(0, 0, 0, 0)",
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
@@ -168,9 +193,14 @@ const s = StyleSheet.create({
   popup: {
     width: "100%",
     maxWidth: 380,
-    backgroundColor: "#fff",
+    backgroundColor: mainThemeColors.bgWhite,
     borderRadius: 16,
     padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   title: {
     fontSize: 20,
@@ -180,13 +210,15 @@ const s = StyleSheet.create({
   },
   lblTitle: {
     fontSize: 16,
-    color: "#6b7280",
+    color: mainThemeColors.grayLabel,
     marginBottom: 6,
   },
   inputFondo: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f3f4f6",
+    backgroundColor: mainThemeColors.bgInputsClientes,
+    borderColor: mainThemeColors.inputBorderBlue,
+    borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -196,7 +228,8 @@ const s = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
-    color: "#111827",
+    color: mainThemeColors.textInputDark,
+    
   },
   buttons: {
     flexDirection: "row",
@@ -209,11 +242,11 @@ const s = StyleSheet.create({
     paddingHorizontal: 16,
   },
   cancelText: {
-    color: "#6b7280",
+    color: mainThemeColors.grayLabel,
     fontSize: 15,
   },
   saveBtn: {
-    backgroundColor: "#2563eb",
+    backgroundColor: mainThemeColors.primaryBlue,
     paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 10,

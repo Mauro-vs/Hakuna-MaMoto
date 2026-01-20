@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { TextInput } from "react-native-paper";
 import LoginIcon from "./loginIcon";
 import ButtonGeneral from "./button";
+import { mainThemeColors } from "../../theme";
 
 export const LoginCard = () => {
   return (
@@ -19,11 +20,11 @@ export const LoginCard = () => {
         <TextInput
             mode="outlined"
             placeholder="nombre@ejemplo.com"
-            placeholderTextColor="#b4b4b4"
-            outlineColor="#dcdcdc"
-            activeOutlineColor="#4f46e5"
+            placeholderTextColor={mainThemeColors.inputPlaceholder}
+            outlineColor={mainThemeColors.grayBorder}
+            activeOutlineColor={mainThemeColors.secondaryIndigo}
             style={styles.paperInput}
-            left={<TextInput.Icon icon="email-outline" color="#b4b4b4" size={20} />}
+            left={<TextInput.Icon icon="email-outline" color={mainThemeColors.inputPlaceholder} size={20} />}
         />
 
         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 15}}>
@@ -34,11 +35,11 @@ export const LoginCard = () => {
             mode="outlined"
             placeholder="********"
             secureTextEntry={true}
-            placeholderTextColor="#b4b4b4"
-            outlineColor="#dcdcdc"
-            activeOutlineColor="#4f46e5"
+            placeholderTextColor={mainThemeColors.inputPlaceholder}
+            outlineColor={mainThemeColors.grayBorder}
+            activeOutlineColor={mainThemeColors.secondaryIndigo}
             style={styles.paperInput}
-            left={<TextInput.Icon icon="lock-outline" color="#b4b4b4" size={20} />}
+            left={<TextInput.Icon icon="lock-outline" color={mainThemeColors.inputPlaceholder} size={20} />}
         />
 
         {/* Botón de inicio de sesión */}
@@ -58,7 +59,7 @@ export const LoginCard = () => {
                 source={require('C:\\Users\\mauro\\Documents\\DAM-PmDm\\REACT\\myAppProject\\assets\\google.png')}
                 style={{ width: 18, height: 18, marginRight: 10 }}
             />
-            <Text style={{fontSize: 14, fontWeight: "bold", color: "#606060ff", alignSelf: "center"}}>Google</Text>
+            <Text style={{fontSize: 14, fontWeight: "bold", color: mainThemeColors.textInputDark, alignSelf: "center"}}>Google</Text>
         </Pressable>
 
         <View style={{flexDirection: "row", alignSelf: "center", marginTop: 15}}>
@@ -79,24 +80,24 @@ const styles = StyleSheet.create({
     },
     subtitulo: {
         fontSize: 16,
-        color: "#666",
+        color: mainThemeColors.textGray,
         marginBottom: 20,
     },
     inputText: {
         fontSize: 14,
-        color: "#606060ff",
+        color: mainThemeColors.textInputDark,
         fontWeight: "700",
         marginBottom: 5,
     },
     inputTextPassword: {
         fontSize: 14,
-        color: "#4f46e5",
+        color: mainThemeColors.secondaryIndigo,
         fontWeight: "700",
         marginBottom: 5,
     },
     paperInput: {
         height: 48,
-        backgroundColor: "#f5f6fa",
+        backgroundColor: mainThemeColors.bgLightGray,
         fontSize: 15,
     },
     buttonG: {
@@ -104,9 +105,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#fff",
+        backgroundColor: mainThemeColors.bgWhite,
         borderWidth: 1,
-        borderColor: "#dcdcdc",
+        borderColor: mainThemeColors.grayBorder,
         borderRadius: 8,
         paddingVertical: 12,
         marginTop: 10,
@@ -114,11 +115,11 @@ const styles = StyleSheet.create({
     separatorLine: {
         flex: 1,
         height: 1,
-        backgroundColor: "#dcdcdc",
+        backgroundColor: mainThemeColors.grayBorder,
     },
     separatorText: {
         marginHorizontal: 10,
-        color: "#777",
+        color: mainThemeColors.textLightGray,
         fontSize: 14,
     },
 });

@@ -7,25 +7,30 @@ import {
   StyleSheet,
   Modal,
   Alert,
+  ScrollView,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { clientesService } from "../../services/clientesService";
+import { router } from "expo-router";
+import { mainThemeColors } from "../../theme";
 
 interface ClienteInfo {
   cliente: {
-    id: number; // Add this line
+    id: number;
     nombre: string;
     apellido: string;
     email: string;
     telefono: string;
   };
-  setVisible: (v: boolean) => void; // Para cerrar el modal desde el padre
+  setVisible: (v: boolean) => void;
   onGuardar: (clienteActualizado: {
     nombre: string;
     apellido: string;
     email: string;
     telefono: string;
-  }) => void; // Para actualizar el cliente
+  }) => void;
 }
 
 export default function WinEmergenteEditar({
@@ -36,20 +41,79 @@ export default function WinEmergenteEditar({
   const [modalVisible, setModalVisible] = useState(true);
   const [clienteEdit, setClienteEdit] = useState(cliente);
 
-  // Si el modal se cierra desde fuera, mantener sincronizado
   useEffect(() => {
     setClienteEdit(cliente);
   }, [cliente]);
 
   const handleDelete = () => {
-    console.log("Cliente eliminado");
+    Alert.alert(
+      "Confirmar eliminación",
+      "¿Estás seguro de que deseas eliminar este cliente?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: () => {
+            try {
+              clientesService.deleteCliente(cliente.id);
+              onGuardar({
+                nombre: "",
+                apellido: "",
+                email: "",
+                telefono: "",
+              });
+              setModalVisible(false);
+              setVisible(false);
+              router.push("/clientes");
+            } catch (error) {
+              Alert.alert("Error", "No se pudo eliminar el cliente");
+              console.error(error);
+            }
+          },
+        },
+      ],
+    );
   };
 
   const handleAceptar = () => {
     try {
-      // Llamar al service para actualizar el cliente
+      if (!clienteEdit.nombre || !clienteEdit.apellido || !clienteEdit.email) {
+        Alert.alert("Error", "Nombre, Apellidos y Email son obligatorios");
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const telefonoRegex = /^[0-9]{9}$/;
+
+      // Validacion de email
+      if (!emailRegex.test(clienteEdit.email)) {
+        Alert.alert("Error", "Introduce un correo válido");
+        return;
+      }
+      // Validacion de duplicados
+      const clientesExistentes = clientesService.getAllClientes();
+      if (
+        clientesExistentes.some(
+          (c) =>
+            c.id !== cliente.id &&
+            c.email.toLowerCase() === clienteEdit.email.toLowerCase(),
+        )
+      ) {
+        Alert.alert(
+          "Error",
+          "Ya existe un cliente con este correo electrónico.",
+        );
+        return;
+      }
+      // Validacion de telefono
+      // Teléfono es opcional
+      if (clienteEdit.telefono && !telefonoRegex.test(clienteEdit.telefono)) {
+        Alert.alert("Error", "Teléfono inválido (9 dígitos)");
+        return;
+      }
+
       clientesService.updateCliente(cliente.id, clienteEdit);
-      // Notificar al padre
       onGuardar(clienteEdit);
       setModalVisible(false);
       setVisible(false);
@@ -65,66 +129,86 @@ export default function WinEmergenteEditar({
   };
 
   return (
-    <Modal visible={modalVisible} animationType="slide" transparent={true}>
-      <View style={s.modalBackground}>
-        <View style={s.modalContainer}>
-          {/* Encabezado */}
-          <View style={s.header}>
-            <Text style={s.headerText}>Modo de edición</Text>
-            <TouchableOpacity onPress={handleDelete}>
-              <Feather name="trash-2" size={24} color="red" />
-            </TouchableOpacity>
-          </View>
+    <Modal visible={modalVisible} animationType="slide" transparent>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={s.modalBackground}>
+          <View style={s.modalContainer}>
+            {/* Header */}
+            <View style={s.header}>
+              <Text style={s.headerText}>Modo de edición</Text>
+              <TouchableOpacity onPress={handleDelete}>
+                <Feather name="trash-2" size={24} color="red" />
+              </TouchableOpacity>
+            </View>
 
-          {/* Formulario */}
-          <View style={s.form}>
-            <Text style={s.textLabel}>Nombre:</Text>
-            <TextInput
-              style={s.input}
-              value={clienteEdit.nombre}
-              onChangeText={(text) =>
-                setClienteEdit({ ...clienteEdit, nombre: text })
-              }
-            />
-            <Text style={s.textLabel}>Apellidos:</Text>
-            <TextInput
-              style={s.input}
-              value={clienteEdit.apellido}
-              onChangeText={(text) =>
-                setClienteEdit({ ...clienteEdit, apellido: text })
-              }
-            />
-            <Text style={s.textLabel}>Email:</Text>
-            <TextInput
-              style={s.input}
-              value={clienteEdit.email}
-              onChangeText={(text) =>
-                setClienteEdit({ ...clienteEdit, email: text })
-              }
-              keyboardType="email-address"
-            />
-            <Text style={s.textLabel}>Teléfono:</Text>
-            <TextInput
-              style={s.input}
-              value={clienteEdit.telefono}
-              onChangeText={(text) =>
-                setClienteEdit({ ...clienteEdit, telefono: text })
-              }
-              keyboardType="phone-pad"
-            />
-          </View>
+            {/* Formulario */}
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 20 }}
+            >
+              <View style={s.form}>
+                <Text style={s.textLabel}>Nombre</Text>
+                <TextInput
+                  style={s.input}
+                  value={clienteEdit.nombre}
+                  onChangeText={(text) =>
+                    setClienteEdit({ ...clienteEdit, nombre: text })
+                  }
+                  returnKeyType="next"
+                />
 
-          {/* Botones */}
-          <View style={s.buttons}>
-            <TouchableOpacity style={s.cancelButton} onPress={handleCancelar}>
-              <Text style={s.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.acceptButton} onPress={handleAceptar}>
-              <Text style={s.buttonText}>Aceptar</Text>
-            </TouchableOpacity>
+                <Text style={s.textLabel}>Apellidos</Text>
+                <TextInput
+                  style={s.input}
+                  value={clienteEdit.apellido}
+                  onChangeText={(text) =>
+                    setClienteEdit({ ...clienteEdit, apellido: text })
+                  }
+                  returnKeyType="next"
+                />
+
+                <Text style={s.textLabel}>Email</Text>
+                <TextInput
+                  style={s.input}
+                  value={clienteEdit.email}
+                  onChangeText={(text) =>
+                    setClienteEdit({ ...clienteEdit, email: text })
+                  }
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  returnKeyType="next"
+                />
+
+                <Text style={s.textLabel}>Teléfono</Text>
+                <TextInput
+                  style={s.input}
+                  value={clienteEdit.telefono}
+                  onChangeText={(text) =>
+                    setClienteEdit({ ...clienteEdit, telefono: text })
+                  }
+                  keyboardType="phone-pad"
+                  returnKeyType="done"
+                />
+              </View>
+            </ScrollView>
+
+            {/* Botones */}
+            <View style={s.buttons}>
+              <TouchableOpacity style={s.cancelButton} onPress={handleCancelar}>
+                <Text style={s.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={s.acceptButton} onPress={handleAceptar}>
+                <Text style={s.buttonText}>Aceptar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -140,14 +224,10 @@ const s = StyleSheet.create({
     width: "100%",
     maxWidth: 480,
     height: "75%",
-    backgroundColor: "#ffffff",
+    backgroundColor: mainThemeColors.bgWhite,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 30,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
     elevation: 12,
   },
   header: {
@@ -156,70 +236,57 @@ const s = StyleSheet.create({
     alignItems: "center",
     marginBottom: 25,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: mainThemeColors.grayBorderLight,
     paddingBottom: 10,
   },
   headerText: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#111",
+    color: mainThemeColors.textDarkMain,
   },
   form: {
-    flex: 1,
-    marginBottom: 25,
+    flexGrow: 1,
   },
   textLabel: {
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 6,
     marginLeft: 12,
-    color: "#333",
+    color: mainThemeColors.textMedium,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#2196F3",
+    borderColor: mainThemeColors.inputBorderBlue,
     borderRadius: 20,
     paddingVertical: 14,
     paddingHorizontal: 18,
     marginBottom: 20,
-    backgroundColor: "#fefefe",
+    backgroundColor: mainThemeColors.inputBgWhite,
     fontSize: 16,
-    color: "#222",
-    shadowColor: "#2196F3",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    color: mainThemeColors.textInputColor,
   },
   buttons: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 10,
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: "#ff9292",
+    backgroundColor: mainThemeColors.dangerRed,
+    borderColor: mainThemeColors.dangerRedDark,
+    borderWidth: 2,
     paddingVertical: 14,
     borderRadius: 25,
     marginRight: 10,
-    borderWidth: 2,
-    borderColor: "#f32121",
-    shadowColor: "#ff9292",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
   },
   acceptButton: {
     flex: 1,
     paddingVertical: 14,
     borderRadius: 25,
     marginLeft: 10,
-    backgroundColor: "#2196F3",
-    shadowColor: "#2196F3",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
+    backgroundColor: mainThemeColors.inputBorderBlue,
+    borderColor: mainThemeColors.textDarkMain,
+    borderWidth: 2,
   },
   buttonText: {
     color: "#fff",

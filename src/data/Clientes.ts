@@ -13,7 +13,7 @@ export const clientes: Cliente[] = [
     name: "Mauro",
     surname: "Valdes Sanjuan",
     email: "mauro@gmail.com",
-    phoneNumber: "+34612345678",
+    phoneNumber: "612345678",
     pedidos: ["Pedido AB", "Pedido BA"],
   },
   {
@@ -21,7 +21,7 @@ export const clientes: Cliente[] = [
     name: "Ana",
     surname: "Garcia Lopez",
     email: "ana@gmail.com",
-    phoneNumber: "+34612345679",
+    phoneNumber: "612345679",
     pedidos: ["Pedido CD", "Pedido DC"],
   },
   {
@@ -29,7 +29,7 @@ export const clientes: Cliente[] = [
     name: "Luis",
     surname: "Martinez Ruiz",
     email: "luis@gmail.com",
-    phoneNumber: "+34612345680",
+    phoneNumber: "612345680",
     pedidos: ["Pedido EF", "Pedido FE"],
   }
 ];

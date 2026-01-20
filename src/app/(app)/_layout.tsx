@@ -1,16 +1,17 @@
 import { Feather } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { mainThemeColors } from '../../theme';
 
 export default function HomeLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: '#1f3f8aff' },
-        headerTintColor: '#ffffff',
+        headerStyle: { backgroundColor: mainThemeColors.primaryNavy },
+        headerTintColor: mainThemeColors.headerText,
         
-        tabBarStyle: { backgroundColor: '#1f3f8aff'},
-        tabBarActiveTintColor: '#ffffff',
-        tabBarInactiveTintColor: '#94a3b8',
+        tabBarStyle: { backgroundColor: mainThemeColors.tabBg},
+        tabBarActiveTintColor: mainThemeColors.tabActive,
+        tabBarInactiveTintColor: mainThemeColors.tabInactive,
       }}>
 
       <Tabs.Screen 

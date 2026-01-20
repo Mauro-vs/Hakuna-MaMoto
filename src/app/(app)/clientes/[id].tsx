@@ -6,12 +6,14 @@ import {
   ActivityIndicator,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { Cliente } from "../../../data/Clientes";
 import { clientesService } from "../../../services/clientesService";
 import WinEmergenteEditar from "../../../components/clientesPages/WinEmergenteEditar";
+import { mainThemeColors } from "../../../theme";
 
 export default function ClienteDetallado() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,7 +27,7 @@ export default function ClienteDetallado() {
 
     (async () => {
       setCargando(true);
-      const c = await clientesService.getClienteById(clientId);
+      const c = clientesService.getClienteById(clientId);
       if (mounted) {
         setCliente(c || null);
         setCargando(false);
@@ -58,7 +60,7 @@ export default function ClienteDetallado() {
   if (cargando) {
     return (
       <View style={s.center}>
-        <ActivityIndicator size="large" color="#2563eb" />
+        <ActivityIndicator size="large" color={mainThemeColors.primaryBlue} />
         <Text style={s.loadingText}>Cargando cliente...</Text>
       </View>
     );
@@ -98,7 +100,7 @@ export default function ClienteDetallado() {
 
       {/* Header */}
       <View style={s.header}>
-        <Feather name="user" size={32} color="#2563eb" />
+        <Feather name="user" size={32} color={mainThemeColors.primaryBlue} />
         <Text style={s.name}>
           {cliente.name} {cliente.surname}
         </Text>
@@ -107,12 +109,12 @@ export default function ClienteDetallado() {
       {/* Card info */}
       <View style={s.card}>
         <View style={s.row}>
-          <Feather name="mail" size={18} color="#6b7280" />
+          <Feather name="mail" size={18} color={mainThemeColors.grayLabel} />
           <Text style={s.value}>{cliente.email}</Text>
         </View>
 
         <View style={s.row}>
-          <Feather name="phone" size={18} color="#6b7280" />
+          <Feather name="phone" size={18} color={mainThemeColors.grayLabel} />
           <Text style={s.value}>{cliente.phoneNumber}</Text>
         </View>
       </View>
@@ -126,7 +128,7 @@ export default function ClienteDetallado() {
         ) : (
           cliente.pedidos.map((p, i) => (
             <View key={i} style={s.pedido}>
-              <Feather name="shopping-bag" size={16} color="#2563eb" />
+              <Feather name="shopping-bag" size={16} color={mainThemeColors.primaryBlue} />
               <Text style={s.pedidoText}>{p}</Text>
             </View>
           ))
@@ -135,14 +137,24 @@ export default function ClienteDetallado() {
 
       {/* Boton para eliminar cliente */}
       <View>
-        <ScrollView contentContainerStyle={s.container}>
-          {/* tu contenido actual */}
-        </ScrollView>
         <TouchableOpacity
           style={s.deleteButton}
-          onPress={async () => {
-            await clientesService.deleteCliente(cliente.id);
-            router.push("/clientes");
+          onPress={() => {
+            Alert.alert(
+              "Eliminar Cliente",
+              "¿Estás seguro de que deseas eliminar este cliente?",
+              [
+          { text: "Cancelar", onPress: () => {}, style: "cancel" },
+          {
+            text: "Eliminar",
+            onPress: async () => {
+              clientesService.deleteCliente(cliente.id);
+              router.push("/clientes");
+            },
+            style: "destructive",
+          },
+              ]
+            );
           }}>
           <Text style={{ color: "#ffffff", fontWeight: "700", fontSize: 16 }}>
             Eliminar Cliente
@@ -171,7 +183,7 @@ export default function ClienteDetallado() {
 const s = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: "#f9fafb",
+    backgroundColor: mainThemeColors.bgLight,
   },
 
   center: {
@@ -182,11 +194,11 @@ const s = StyleSheet.create({
 
   loadingText: {
     marginTop: 12,
-    color: "#6b7280",
+    color: mainThemeColors.grayLabel,
   },
 
   error: {
-    color: "#dc2626",
+    color: mainThemeColors.errorRed,
     fontSize: 16,
   },
 
@@ -199,11 +211,11 @@ const s = StyleSheet.create({
   name: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#111827",
+    color: mainThemeColors.textDarkMain,
   },
 
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: mainThemeColors.cardBg,
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
@@ -219,13 +231,13 @@ const s = StyleSheet.create({
 
   value: {
     fontSize: 15,
-    color: "#374151",
+    color: mainThemeColors.textMedium,
   },
 
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
+    color: mainThemeColors.textDarkMain,
     marginBottom: 8,
   },
 
@@ -238,16 +250,16 @@ const s = StyleSheet.create({
 
   pedidoText: {
     fontSize: 14,
-    color: "#374151",
+    color: mainThemeColors.textMedium,
   },
 
   empty: {
     fontSize: 14,
-    color: "#9ca3af",
+    color: mainThemeColors.grayText,
     textAlign: "center",
   },
   deleteButton: {
-    backgroundColor: "#ff9292",
+    backgroundColor: mainThemeColors.dangerRed,
     paddingVertical: 14,
     borderRadius: 16,
     justifyContent: "center",
@@ -256,8 +268,8 @@ const s = StyleSheet.create({
     marginBottom: 15,
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#f32121",
-    shadowColor: "#ff9292",
+    borderColor: mainThemeColors.dangerRedDark,
+    shadowColor: mainThemeColors.dangerRed,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
