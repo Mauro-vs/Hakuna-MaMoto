@@ -131,11 +131,15 @@ export default function WinEmergenteEditar({
   return (
     <Modal visible={modalVisible} animationType="slide" transparent>
       <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
+        contentContainerStyle={{ flexGrow: 1 }}
+        enabled
       >
         <View style={s.modalBackground}>
           <View style={s.modalContainer}>
+
             {/* Header */}
             <View style={s.header}>
               <Text style={s.headerText}>Modo de edición</Text>
@@ -224,7 +228,7 @@ const s = StyleSheet.create({
     width: "100%",
     maxWidth: 480,
     height: "75%",
-    backgroundColor: mainThemeColors.bgWhite,
+    backgroundColor: mainThemeColors.backgroundCard,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 30,
@@ -236,13 +240,13 @@ const s = StyleSheet.create({
     alignItems: "center",
     marginBottom: 25,
     borderBottomWidth: 1,
-    borderBottomColor: mainThemeColors.grayBorderLight,
+    borderBottomColor: mainThemeColors.inputBorder,
     paddingBottom: 10,
   },
   headerText: {
     fontSize: 22,
     fontWeight: "700",
-    color: mainThemeColors.textDarkMain,
+    color: mainThemeColors.textTitle,
   },
   form: {
     flexGrow: 1,
@@ -252,18 +256,18 @@ const s = StyleSheet.create({
     fontWeight: "500",
     marginBottom: 6,
     marginLeft: 12,
-    color: mainThemeColors.textMedium,
+    color: mainThemeColors.textValue,
   },
   input: {
     borderWidth: 1,
-    borderColor: mainThemeColors.inputBorderBlue,
+    borderColor: mainThemeColors.inputBorder,
     borderRadius: 20,
     paddingVertical: 14,
     paddingHorizontal: 18,
     marginBottom: 20,
-    backgroundColor: mainThemeColors.inputBgWhite,
+    backgroundColor: mainThemeColors.inputBackground,
     fontSize: 16,
-    color: mainThemeColors.textInputColor,
+    color: mainThemeColors.textInput,
   },
   buttons: {
     flexDirection: "row",
@@ -272,8 +276,8 @@ const s = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: mainThemeColors.dangerRed,
-    borderColor: mainThemeColors.dangerRedDark,
+    backgroundColor: mainThemeColors.errorButton,
+    borderColor: mainThemeColors.errorBorder,
     borderWidth: 2,
     paddingVertical: 14,
     borderRadius: 25,
@@ -284,8 +288,8 @@ const s = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 25,
     marginLeft: 10,
-    backgroundColor: mainThemeColors.inputBorderBlue,
-    borderColor: mainThemeColors.textDarkMain,
+    backgroundColor: mainThemeColors.inputBorder,
+    borderColor: mainThemeColors.textTitle,
     borderWidth: 2,
   },
   buttonText: {

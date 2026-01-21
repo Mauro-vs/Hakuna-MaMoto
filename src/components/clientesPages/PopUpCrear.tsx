@@ -101,36 +101,36 @@ export const PopUpCrear = ({
 
               <Text style={s.lblTitle}>Nombre</Text>
               <View style={s.inputFondo}>
-                <Feather name="user" size={18} color={mainThemeColors.grayText} />
+                <Feather name="user" size={18} color={mainThemeColors.grayLabelText} />
                 <TextInput
                   value={nombre}
                   onChangeText={setNombre}
                   placeholder="Juan"
-                  placeholderTextColor={mainThemeColors.grayText}
+                  placeholderTextColor={mainThemeColors.grayLabelText}
                   style={s.input}
                 />
               </View>
 
               <Text style={s.lblTitle}>Apellido</Text>
               <View style={s.inputFondo}>
-                <Feather name="user" size={18} color={mainThemeColors.grayText} />
+                <Feather name="user" size={18} color={mainThemeColors.grayLabelText} />
                 <TextInput
                   value={apellido}
                   onChangeText={setApellido}
                   placeholder="Pérez"
-                  placeholderTextColor={mainThemeColors.grayText}
+                  placeholderTextColor={mainThemeColors.grayLabelText}
                   style={s.input}
                 />
               </View>
 
               <Text style={s.lblTitle}>Correo electrónico</Text>
               <View style={s.inputFondo}>
-                <Feather name="mail" size={18} color={mainThemeColors.grayText} />
+                <Feather name="mail" size={18} color={mainThemeColors.grayLabelText} />
                 <TextInput
                   value={email}
                   onChangeText={setEmail}
                   placeholder="correo@ejemplo.com"
-                  placeholderTextColor={mainThemeColors.grayText}
+                  placeholderTextColor={mainThemeColors.grayLabelText}
                   keyboardType="email-address"
                   style={s.input}
                 />
@@ -138,12 +138,12 @@ export const PopUpCrear = ({
 
               <Text style={s.lblTitle}>Teléfono</Text>
               <View style={s.inputFondo}>
-                <Feather name="phone" size={18} color={mainThemeColors.grayText} />
+                <Feather name="phone" size={18} color={mainThemeColors.grayLabelText} />
                 <TextInput
                   value={telefono}
                   onChangeText={setTelefono}
                   placeholder="600 123 456"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={mainThemeColors.grayLabelText}
                   keyboardType="phone-pad"
                   style={s.input}
                 />
@@ -175,7 +175,7 @@ const s = StyleSheet.create({
     position: "absolute",
     bottom: 24,
     right: 24,
-    backgroundColor: mainThemeColors.primaryBlue,
+    backgroundColor: mainThemeColors.primaryButton,
     width: 56,
     height: 56,
     borderRadius: 16,
@@ -193,7 +193,7 @@ const s = StyleSheet.create({
   popup: {
     width: "100%",
     maxWidth: 380,
-    backgroundColor: mainThemeColors.bgWhite,
+    backgroundColor: mainThemeColors.backgroundCard,
     borderRadius: 16,
     padding: 20,
     shadowColor: "#000",
@@ -210,14 +210,14 @@ const s = StyleSheet.create({
   },
   lblTitle: {
     fontSize: 16,
-    color: mainThemeColors.grayLabel,
+    color: mainThemeColors.textValue,
     marginBottom: 6,
   },
   inputFondo: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: mainThemeColors.bgInputsClientes,
-    borderColor: mainThemeColors.inputBorderBlue,
+    backgroundColor: mainThemeColors.backgroundInput,
+    borderColor: mainThemeColors.inputBorder,
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 12,
@@ -228,7 +228,7 @@ const s = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
-    color: mainThemeColors.textInputDark,
+    color: mainThemeColors.textInput,
     
   },
   buttons: {
@@ -242,11 +242,11 @@ const s = StyleSheet.create({
     paddingHorizontal: 16,
   },
   cancelText: {
-    color: mainThemeColors.grayLabel,
+    color: mainThemeColors.grayLabelText,
     fontSize: 15,
   },
   saveBtn: {
-    backgroundColor: mainThemeColors.primaryBlue,
+    backgroundColor: mainThemeColors.primaryButton,
     paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 10,

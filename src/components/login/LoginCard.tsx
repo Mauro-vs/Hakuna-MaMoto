@@ -21,8 +21,8 @@ export const LoginCard = () => {
             mode="outlined"
             placeholder="nombre@ejemplo.com"
             placeholderTextColor={mainThemeColors.inputPlaceholder}
-            outlineColor={mainThemeColors.grayBorder}
-            activeOutlineColor={mainThemeColors.secondaryIndigo}
+            outlineColor={mainThemeColors.borderMain}
+            activeOutlineColor={mainThemeColors.borderLight}
             style={styles.paperInput}
             left={<TextInput.Icon icon="email-outline" color={mainThemeColors.inputPlaceholder} size={20} />}
         />
@@ -36,8 +36,8 @@ export const LoginCard = () => {
             placeholder="********"
             secureTextEntry={true}
             placeholderTextColor={mainThemeColors.inputPlaceholder}
-            outlineColor={mainThemeColors.grayBorder}
-            activeOutlineColor={mainThemeColors.secondaryIndigo}
+            outlineColor={mainThemeColors.borderMain}
+            activeOutlineColor={mainThemeColors.borderLight}
             style={styles.paperInput}
             left={<TextInput.Icon icon="lock-outline" color={mainThemeColors.inputPlaceholder} size={20} />}
         />
@@ -59,7 +59,7 @@ export const LoginCard = () => {
                 source={require('C:\\Users\\mauro\\Documents\\DAM-PmDm\\REACT\\myAppProject\\assets\\google.png')}
                 style={{ width: 18, height: 18, marginRight: 10 }}
             />
-            <Text style={{fontSize: 14, fontWeight: "bold", color: mainThemeColors.textInputDark, alignSelf: "center"}}>Google</Text>
+            <Text style={{fontSize: 14, fontWeight: "bold", color: mainThemeColors.textTitle, alignSelf: "center"}}>Google</Text>
         </Pressable>
 
         <View style={{flexDirection: "row", alignSelf: "center", marginTop: 15}}>
@@ -80,24 +80,24 @@ const styles = StyleSheet.create({
     },
     subtitulo: {
         fontSize: 16,
-        color: mainThemeColors.textGray,
+        color: mainThemeColors.grayLabelText,
         marginBottom: 20,
     },
     inputText: {
         fontSize: 14,
-        color: mainThemeColors.textInputDark,
+        color: mainThemeColors.textInput,
         fontWeight: "700",
         marginBottom: 5,
     },
     inputTextPassword: {
         fontSize: 14,
-        color: mainThemeColors.secondaryIndigo,
+        color: mainThemeColors.secondaryLink,
         fontWeight: "700",
         marginBottom: 5,
     },
     paperInput: {
         height: 48,
-        backgroundColor: mainThemeColors.bgLightGray,
+        backgroundColor: mainThemeColors.backgroundInput,
         fontSize: 15,
     },
     buttonG: {
@@ -105,9 +105,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: mainThemeColors.bgWhite,
+        backgroundColor: mainThemeColors.backgroundCard,
         borderWidth: 1,
-        borderColor: mainThemeColors.grayBorder,
+        borderColor: mainThemeColors.borderMain,
         borderRadius: 8,
         paddingVertical: 12,
         marginTop: 10,
@@ -115,11 +115,11 @@ const styles = StyleSheet.create({
     separatorLine: {
         flex: 1,
         height: 1,
-        backgroundColor: mainThemeColors.grayBorder,
+        backgroundColor: mainThemeColors.borderMain,
     },
     separatorText: {
         marginHorizontal: 10,
-        color: mainThemeColors.textLightGray,
+        color: mainThemeColors.textSeparator,
         fontSize: 14,
     },
 });

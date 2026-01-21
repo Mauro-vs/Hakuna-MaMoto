@@ -60,7 +60,7 @@ export default function ClienteDetallado() {
   if (cargando) {
     return (
       <View style={s.center}>
-        <ActivityIndicator size="large" color={mainThemeColors.primaryBlue} />
+        <ActivityIndicator size="large" color={mainThemeColors.primaryHeader} />
         <Text style={s.loadingText}>Cargando cliente...</Text>
       </View>
     );
@@ -100,7 +100,7 @@ export default function ClienteDetallado() {
 
       {/* Header */}
       <View style={s.header}>
-        <Feather name="user" size={32} color={mainThemeColors.primaryBlue} />
+        <Feather name="user" size={32} color={mainThemeColors.primaryHeader} />
         <Text style={s.name}>
           {cliente.name} {cliente.surname}
         </Text>
@@ -109,12 +109,12 @@ export default function ClienteDetallado() {
       {/* Card info */}
       <View style={s.card}>
         <View style={s.row}>
-          <Feather name="mail" size={18} color={mainThemeColors.grayLabel} />
+          <Feather name="mail" size={18} color={mainThemeColors.grayLabelText} />
           <Text style={s.value}>{cliente.email}</Text>
         </View>
 
         <View style={s.row}>
-          <Feather name="phone" size={18} color={mainThemeColors.grayLabel} />
+          <Feather name="phone" size={18} color={mainThemeColors.grayLabelText} />
           <Text style={s.value}>{cliente.phoneNumber}</Text>
         </View>
       </View>
@@ -128,7 +128,7 @@ export default function ClienteDetallado() {
         ) : (
           cliente.pedidos.map((p, i) => (
             <View key={i} style={s.pedido}>
-              <Feather name="shopping-bag" size={16} color={mainThemeColors.primaryBlue} />
+              <Feather name="shopping-bag" size={16} color={mainThemeColors.primaryHeader} />
               <Text style={s.pedidoText}>{p}</Text>
             </View>
           ))
@@ -183,7 +183,7 @@ export default function ClienteDetallado() {
 const s = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: mainThemeColors.bgLight,
+    backgroundColor: mainThemeColors.backgroundCard,
   },
 
   center: {
@@ -194,11 +194,11 @@ const s = StyleSheet.create({
 
   loadingText: {
     marginTop: 12,
-    color: mainThemeColors.grayLabel,
+    color: mainThemeColors.textValue,
   },
 
   error: {
-    color: mainThemeColors.errorRed,
+    color: mainThemeColors.errorText,
     fontSize: 16,
   },
 
@@ -211,11 +211,11 @@ const s = StyleSheet.create({
   name: {
     fontSize: 22,
     fontWeight: "600",
-    color: mainThemeColors.textDarkMain,
+    color: mainThemeColors.textTitle,
   },
 
   card: {
-    backgroundColor: mainThemeColors.cardBg,
+    backgroundColor: mainThemeColors.cardBackground,
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
@@ -231,13 +231,13 @@ const s = StyleSheet.create({
 
   value: {
     fontSize: 15,
-    color: mainThemeColors.textMedium,
+    color: mainThemeColors.textValue,
   },
 
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: mainThemeColors.textDarkMain,
+    color: mainThemeColors.textTitle,
     marginBottom: 8,
   },
 
@@ -250,16 +250,16 @@ const s = StyleSheet.create({
 
   pedidoText: {
     fontSize: 14,
-    color: mainThemeColors.textMedium,
+    color: mainThemeColors.textValue,
   },
 
   empty: {
     fontSize: 14,
-    color: mainThemeColors.grayText,
+    color: mainThemeColors.grayPlaceholder,
     textAlign: "center",
   },
   deleteButton: {
-    backgroundColor: mainThemeColors.dangerRed,
+    backgroundColor: mainThemeColors.errorButton,
     paddingVertical: 14,
     borderRadius: 16,
     justifyContent: "center",
@@ -268,8 +268,8 @@ const s = StyleSheet.create({
     marginBottom: 15,
     alignItems: "center",
     borderWidth: 2,
-    borderColor: mainThemeColors.dangerRedDark,
-    shadowColor: mainThemeColors.dangerRed,
+    borderColor: mainThemeColors.errorBorder,
+    shadowColor: mainThemeColors.errorButton,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
     shadowRadius: 5,

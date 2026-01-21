@@ -23,11 +23,11 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
       </View>
       <View style={s.pie}>
         <View style={s.fila}>
-          <Feather name="mail" size={14} color={mainThemeColors.grayLabel} style={s.icono} />
+          <Feather name="mail" size={14} color={mainThemeColors.textValue} style={s.icono} />
           <Text style={s.texto}>{item.email}</Text>
         </View>
         <View style={s.fila}>
-          <Feather name="phone" size={14} color={mainThemeColors.grayLabel} style={s.icono} />
+          <Feather name="phone" size={14} color={mainThemeColors.textValue} style={s.icono} />
           <Text style={s.texto}>{item.phoneNumber}</Text>
         </View>
       </View>
@@ -36,12 +36,12 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
 
   const s = StyleSheet.create({
     tarjeta: {
-      backgroundColor: mainThemeColors.cardBg,
+      backgroundColor: mainThemeColors.backgroundCard,
       borderRadius: 12,
       padding: 14,
       marginBottom: 10,
       borderLeftWidth: 3,
-      borderLeftColor: mainThemeColors.cardBorderLeft,
+      borderLeftColor: mainThemeColors.primaryButton,
       shadowColor: "#000",
       shadowOpacity: 0.08,
       shadowRadius: 4,
@@ -60,7 +60,7 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: mainThemeColors.avatarBg,
+      backgroundColor: mainThemeColors.avatarBackground,
       justifyContent: "center",
       alignItems: "center",
       marginRight: 12,
@@ -76,11 +76,11 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
     nombre: {
       fontSize: 15,
       fontWeight: "600",
-      color: mainThemeColors.textDark,
+      color: mainThemeColors.textTitle,
     },
     textoSecundario: {
       fontSize: 11,
-      color: mainThemeColors.grayText,
+      color: mainThemeColors.grayLabelText,
       marginTop: 2,
     },
     pie: {
@@ -96,7 +96,7 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
     },
     texto: {
       fontSize: 12,
-      color: mainThemeColors.grayLabel,
+      color: mainThemeColors.grayLabelText,
     },
   });
   

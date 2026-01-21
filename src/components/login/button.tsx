@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { use } from "react";
 import { View,Text, StyleSheet, Pressable } from "react-native";
+import { mainThemeColors } from "../../theme";
 
 const ButtonGeneral = () => {
   const router = useRouter();
@@ -17,7 +18,7 @@ const ButtonGeneral = () => {
 const s = StyleSheet.create({
   button: {
         marginTop: 30,
-        backgroundColor: "#4f46e5",
+        backgroundColor: mainThemeColors.primaryButton,
         paddingVertical: 12,
         borderRadius: 7,
         alignItems: "center",

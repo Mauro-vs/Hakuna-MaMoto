@@ -6,10 +6,10 @@ export default function HomeLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: mainThemeColors.primaryNavy },
+        headerStyle: { backgroundColor: mainThemeColors.primaryHeader },
         headerTintColor: mainThemeColors.headerText,
         
-        tabBarStyle: { backgroundColor: mainThemeColors.tabBg},
+        tabBarStyle: { backgroundColor: mainThemeColors.tabBackground},
         tabBarActiveTintColor: mainThemeColors.tabActive,
         tabBarInactiveTintColor: mainThemeColors.tabInactive,
       }}>
