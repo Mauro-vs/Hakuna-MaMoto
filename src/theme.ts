@@ -53,7 +53,66 @@ export const mainThemeColors = {
   tabInactive: "#b9bdc2",           // Tab inactivo (gris claro - visible pero discreto)
 };
 
+// Paleta modo oscuro: respeta la identidad teal pero con fondos oscuros elegantes
+export const mainThemeColorsDark = {
+  // PRIMARIOS (teal profesional, menos saturado)
+  primaryButton: "#1aa38f",
+  primaryHeader: "#102033",
+
+  // SECUNDARIOS
+  secondaryLink: "#4db6e2",
+
+  // PELIGRO/ERROR
+  errorButton: "#e75f5f",
+  errorBorder: "#d64545",
+  errorText: "#f5b5b5",
+
+  // FONDOS (oscuro elegante con matiz azul marino)
+  backgroundCard: "#131b28",
+  backgroundMain: "#0f141f",
+  backgroundInput: "#1a2e3d",
+  backgroundInputPopup: "#1a2e3d",
+
+  // NEUTROS
+  grayLabelText: "#d4e0ed",
+  grayPlaceholder: "#7ec4b8",
+  borderMain: "#2a4a5e",
+  borderLight: "#1e3545",
+  iconMain: "#1aa38f",
+
+  // TEXTOS
+  textTitle: "#f4f8fc",
+  textBody: "#e5ecf5",
+  textValue: "#8ddcd1",
+  textSubtitle: "#6bb8e3",
+  textSeparator: "#1e3545",
+  textInput: "#e5f3f0",
+
+  // INPUTS
+  inputBorder: "#2a9d8f",
+  inputBackground: "#1a2e3d",
+  inputPlaceholder: "#6bb8e3",
+
+  // COMPONENTES
+  avatarBackground: "#1a2537",
+  avatarText: "#1aa38f",
+  cardBackground: "#131b28",
+  cardBorderAccent: "#1aa38f",
+
+  // NAVEGACIÓN
+  headerBackground: "#102033",
+  headerText: "#f1f4f9",
+  tabBackground: "#102033",
+  tabActive: "#1aa38f",
+  tabInactive: "#5b6b84",
+};
+
 export const themeApp = {
   ...DefaultTheme,
   colors: mainThemeColors,
+};
+
+export const themeAppDark = {
+  ...DefaultTheme,
+  colors: mainThemeColorsDark,
 };

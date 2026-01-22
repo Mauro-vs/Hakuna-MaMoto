@@ -1,10 +1,17 @@
+import React from "react";
 import { Pressable, View, StyleSheet, Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { router, useRouter } from "expo-router";
+import { router } from "expo-router";
 import { Cliente } from "../../data/Clientes";
-import { mainThemeColors } from "../../theme";
+import { useThemeColors } from "../../store/preferencesStore";
 
-export const listaClientes = ({ item }: { item: Cliente }) => (
+type ItemProps = { item: Cliente };
+
+export const ListaClienteItem: React.FC<ItemProps> = ({ item }) => {
+  const colors = useThemeColors();
+  const s = createStyles(colors);
+
+  return (
     <Pressable
       style={({ pressed }) => [
         s.tarjeta,
@@ -23,25 +30,27 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
       </View>
       <View style={s.pie}>
         <View style={s.fila}>
-          <Feather name="mail" size={14} color={mainThemeColors.textValue} style={s.icono} />
+          <Feather name="mail" size={14} color={colors.textValue} style={s.icono} />
           <Text style={s.texto}>{item.email}</Text>
         </View>
         <View style={s.fila}>
-          <Feather name="phone" size={14} color={mainThemeColors.textValue} style={s.icono} />
+          <Feather name="phone" size={14} color={colors.textValue} style={s.icono} />
           <Text style={s.texto}>{item.phoneNumber}</Text>
         </View>
       </View>
     </Pressable>
   );
+};
 
-  const s = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
+  StyleSheet.create({
     tarjeta: {
-      backgroundColor: mainThemeColors.backgroundCard,
+      backgroundColor: colors.backgroundCard,
       borderRadius: 12,
       padding: 14,
       marginBottom: 10,
       borderLeftWidth: 3,
-      borderLeftColor: mainThemeColors.primaryButton,
+      borderLeftColor: colors.primaryButton,
       shadowColor: "#000",
       shadowOpacity: 0.08,
       shadowRadius: 4,
@@ -60,7 +69,7 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: mainThemeColors.avatarBackground,
+      backgroundColor: colors.avatarBackground,
       justifyContent: "center",
       alignItems: "center",
       marginRight: 12,
@@ -68,7 +77,7 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
     avatarTx: {
       fontSize: 14,
       fontWeight: "700",
-      color: mainThemeColors.avatarText,
+      color: colors.avatarText,
     },
     info: {
       flex: 1,
@@ -76,11 +85,11 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
     nombre: {
       fontSize: 15,
       fontWeight: "600",
-      color: mainThemeColors.textTitle,
+      color: colors.textTitle,
     },
     textoSecundario: {
       fontSize: 11,
-      color: mainThemeColors.grayLabelText,
+      color: colors.grayLabelText,
       marginTop: 2,
     },
     pie: {
@@ -96,7 +105,7 @@ export const listaClientes = ({ item }: { item: Cliente }) => (
     },
     texto: {
       fontSize: 12,
-      color: mainThemeColors.grayLabelText,
+      color: colors.grayLabelText,
     },
   });
   

@@ -1,10 +1,12 @@
 import { useRouter } from "expo-router";
-import React, { use } from "react";
+import React from "react";
 import { View,Text, StyleSheet, Pressable } from "react-native";
-import { mainThemeColors } from "../../theme";
+import { useThemeColors } from "../../store/preferencesStore";
 
 const ButtonGeneral = () => {
   const router = useRouter();
+  const colors = useThemeColors();
+  const s = createStyles(colors);
   const handleLogin = () => {
     router.replace('/home');
   }
@@ -14,19 +16,20 @@ const ButtonGeneral = () => {
     </View>
   )
 }
-// ESTILOS
-const s = StyleSheet.create({
-  button: {
+  // ESTILOS
+  const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
+    StyleSheet.create({
+      button: {
         marginTop: 30,
-        backgroundColor: mainThemeColors.primaryButton,
+        backgroundColor: colors.primaryButton,
         paddingVertical: 12,
         borderRadius: 7,
         alignItems: "center",
-    },
-    buttonText: {
+      },
+      buttonText: {
         color: "#fff",
         fontSize: 16,
         fontWeight: "bold",
-    },
-});
+      },
+  });
 export default  ButtonGeneral;

@@ -4,11 +4,14 @@ import { View, FlatList, Text, StyleSheet } from "react-native";
 import { Cliente } from "../../../data/Clientes";
 import { clientesService } from "../../../services/clientesService";
 import { PopUpCrear } from "../../../components/clientesPages/PopUpCrear";
-import { listaClientes } from "../../../components/clientesPages/ListaClientes"; // tu render
+import { ListaClienteItem } from "../../../components/clientesPages/ListaClientes"; // tu render
+import { useThemeColors } from "../../../store/preferencesStore";
 
 export default function HomeClientes() {
   const [list, setList] = useState<Cliente[]>([]);
   const [visible, setVisible] = useState(false);
+  const colors = useThemeColors();
+  const s = createStyles(colors);
 
   // Carga inicial de clientes
   // const cargar = useCallback(() => {
@@ -42,7 +45,7 @@ export default function HomeClientes() {
         <FlatList
           data={list}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={listaClientes}
+          renderItem={({ item }) => <ListaClienteItem item={item} />}
           contentContainerStyle={list.length === 0 ? s.listaVacia : s.contenido}
           ListEmptyComponent={
             <View style={s.estadoVacio}>
@@ -70,36 +73,37 @@ export default function HomeClientes() {
 }
 
 // ---- Tus estilos originales sin tocar ----
-const s = StyleSheet.create({
-  pantalla: {
-    backgroundColor: "#f9fafb",
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  contenido: {
-    paddingBottom: 12,
-  },
-  texto: {
-    fontSize: 12,
-    color: "#6b7280",
-  },
-  listaVacia: {
-    flexGrow: 1,
-  },
-  estadoVacio: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 6,
-  },
-  textoVacio: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#9ca3af",
-  },
-  sugerencia: {
-    fontSize: 12,
-    color: "#d1d5db",
-  },
+const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
+  StyleSheet.create({
+    pantalla: {
+      backgroundColor: colors.backgroundMain,
+      flex: 1,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    contenido: {
+      paddingBottom: 12,
+    },
+    texto: {
+      fontSize: 12,
+      color: colors.grayLabelText,
+    },
+    listaVacia: {
+      flexGrow: 1,
+    },
+    estadoVacio: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 6,
+    },
+    textoVacio: {
+      fontSize: 15,
+      fontWeight: "500",
+      color: colors.grayLabelText,
+    },
+    sugerencia: {
+      fontSize: 12,
+      color: colors.grayPlaceholder,
+    },
 });

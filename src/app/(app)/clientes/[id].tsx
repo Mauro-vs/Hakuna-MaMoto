@@ -13,7 +13,106 @@ import { Feather } from "@expo/vector-icons";
 import { Cliente } from "../../../data/Clientes";
 import { clientesService } from "../../../services/clientesService";
 import WinEmergenteEditar from "../../../components/clientesPages/WinEmergenteEditar";
-import { mainThemeColors } from "../../../theme";
+import { useThemeColors } from "../../../store/preferencesStore";
+
+const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
+  StyleSheet.create({
+    container: {
+      padding: 16,
+      backgroundColor: colors.backgroundCard,
+    },
+
+    center: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: colors.backgroundMain,
+    },
+
+    loadingText: {
+      marginTop: 12,
+      color: colors.textValue,
+    },
+
+    error: {
+      color: colors.errorText,
+      fontSize: 16,
+    },
+
+    header: {
+      alignItems: "center",
+      marginBottom: 24,
+      gap: 8,
+    },
+
+    name: {
+      fontSize: 22,
+      fontWeight: "600",
+      color: colors.textTitle,
+    },
+
+    card: {
+      backgroundColor: colors.cardBackground,
+      borderRadius: 16,
+      padding: 16,
+      marginBottom: 20,
+      elevation: 3,
+    },
+
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      marginBottom: 12,
+    },
+
+    value: {
+      fontSize: 15,
+      color: colors.textValue,
+    },
+
+    sectionTitle: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors.textTitle,
+      marginBottom: 8,
+    },
+
+    pedido: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingVertical: 8,
+    },
+
+    pedidoText: {
+      fontSize: 14,
+      color: colors.textValue,
+    },
+
+    empty: {
+      fontSize: 14,
+      color: colors.grayPlaceholder,
+      textAlign: "center",
+    },
+    deleteButton: {
+      backgroundColor: colors.errorButton,
+      paddingVertical: 14,
+      borderRadius: 16,
+      justifyContent: "center",
+      marginRight: 15,
+      marginLeft: 15,
+      marginBottom: 15,
+      alignItems: "center",
+      borderWidth: 2,
+      borderColor: colors.errorBorder,
+      shadowColor: colors.errorButton,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.1,
+      shadowRadius: 5,
+      elevation: 3,
+    },
+  });
 
 export default function ClienteDetallado() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -21,6 +120,8 @@ export default function ClienteDetallado() {
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [cargando, setCargando] = useState(true);
   const [editarVisible, setEditarVisible] = useState(false);
+  const colors = useThemeColors();
+  const s = createStyles(colors);
 
   useEffect(() => {
     let mounted = true;
@@ -60,7 +161,7 @@ export default function ClienteDetallado() {
   if (cargando) {
     return (
       <View style={s.center}>
-        <ActivityIndicator size="large" color={mainThemeColors.primaryHeader} />
+        <ActivityIndicator size="large" color={colors.primaryHeader} />
         <Text style={s.loadingText}>Cargando cliente...</Text>
       </View>
     );
@@ -84,7 +185,7 @@ export default function ClienteDetallado() {
               onPress={() => router.push("/clientes")}
               style={{ padding: 12 }}
             >
-              <Feather name="chevron-left" size={25} color="#ffffff" />
+              <Feather name="chevron-left" size={25} color={colors.headerText} />
             </TouchableOpacity>
           ),
           headerRight: () => (
@@ -92,7 +193,7 @@ export default function ClienteDetallado() {
               onPress={() => setEditarVisible(true)}
               style={{ padding: 12 }}
             >
-              <Feather name="edit-2" size={20} color="#ffffff" />
+              <Feather name="edit-2" size={20} color={colors.headerText} />
             </TouchableOpacity>
           ),
         }}
@@ -100,7 +201,7 @@ export default function ClienteDetallado() {
 
       {/* Header */}
       <View style={s.header}>
-        <Feather name="user" size={32} color={mainThemeColors.primaryHeader} />
+        <Feather name="user" size={32} color={colors.iconMain} />
         <Text style={s.name}>
           {cliente.name} {cliente.surname}
         </Text>
@@ -109,12 +210,12 @@ export default function ClienteDetallado() {
       {/* Card info */}
       <View style={s.card}>
         <View style={s.row}>
-          <Feather name="mail" size={18} color={mainThemeColors.grayLabelText} />
+          <Feather name="mail" size={18} color={colors.grayLabelText} />
           <Text style={s.value}>{cliente.email}</Text>
         </View>
 
         <View style={s.row}>
-          <Feather name="phone" size={18} color={mainThemeColors.grayLabelText} />
+          <Feather name="phone" size={18} color={colors.grayLabelText} />
           <Text style={s.value}>{cliente.phoneNumber}</Text>
         </View>
       </View>
@@ -128,7 +229,7 @@ export default function ClienteDetallado() {
         ) : (
           cliente.pedidos.map((p, i) => (
             <View key={i} style={s.pedido}>
-              <Feather name="shopping-bag" size={16} color={mainThemeColors.primaryHeader} />
+              <Feather name="shopping-bag" size={16} color={colors.grayLabelText} />
               <Text style={s.pedidoText}>{p}</Text>
             </View>
           ))
@@ -179,100 +280,3 @@ export default function ClienteDetallado() {
     </ScrollView>
   );
 }
-
-const s = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: mainThemeColors.backgroundCard,
-  },
-
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  loadingText: {
-    marginTop: 12,
-    color: mainThemeColors.textValue,
-  },
-
-  error: {
-    color: mainThemeColors.errorText,
-    fontSize: 16,
-  },
-
-  header: {
-    alignItems: "center",
-    marginBottom: 24,
-    gap: 8,
-  },
-
-  name: {
-    fontSize: 22,
-    fontWeight: "600",
-    color: mainThemeColors.textTitle,
-  },
-
-  card: {
-    backgroundColor: mainThemeColors.cardBackground,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-    elevation: 3,
-  },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 12,
-  },
-
-  value: {
-    fontSize: 15,
-    color: mainThemeColors.textValue,
-  },
-
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: mainThemeColors.textTitle,
-    marginBottom: 8,
-  },
-
-  pedido: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingVertical: 8,
-  },
-
-  pedidoText: {
-    fontSize: 14,
-    color: mainThemeColors.textValue,
-  },
-
-  empty: {
-    fontSize: 14,
-    color: mainThemeColors.grayPlaceholder,
-    textAlign: "center",
-  },
-  deleteButton: {
-    backgroundColor: mainThemeColors.errorButton,
-    paddingVertical: 14,
-    borderRadius: 16,
-    justifyContent: "center",
-    marginRight: 15,
-    marginLeft: 15,
-    marginBottom: 15,
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: mainThemeColors.errorBorder,
-    shadowColor: mainThemeColors.errorButton,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-});

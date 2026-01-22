@@ -14,7 +14,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { clientesService } from "../../services/clientesService";
 import { router } from "expo-router";
-import { mainThemeColors } from "../../theme";
+import { useThemeColors } from "../../store/preferencesStore";
 
 interface ClienteInfo {
   cliente: {
@@ -40,6 +40,8 @@ export default function WinEmergenteEditar({
 }: ClienteInfo) {
   const [modalVisible, setModalVisible] = useState(true);
   const [clienteEdit, setClienteEdit] = useState(cliente);
+  const colors = useThemeColors();
+  const s = createStyles(colors);
 
   useEffect(() => {
     setClienteEdit(cliente);
@@ -131,7 +133,7 @@ export default function WinEmergenteEditar({
   return (
     <Modal visible={modalVisible} animationType="slide" transparent>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
         keyboardVerticalOffset={0}
         contentContainerStyle={{ flexGrow: 1 }}
@@ -153,6 +155,7 @@ export default function WinEmergenteEditar({
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 20 }}
+              style={{ flexGrow: 1 }}
             >
               <View style={s.form}>
                 <Text style={s.textLabel}>Nombre</Text>
@@ -183,8 +186,6 @@ export default function WinEmergenteEditar({
                     setClienteEdit({ ...clienteEdit, email: text })
                   }
                   keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
                   returnKeyType="next"
                 />
 
@@ -196,7 +197,6 @@ export default function WinEmergenteEditar({
                     setClienteEdit({ ...clienteEdit, telefono: text })
                   }
                   keyboardType="phone-pad"
-                  returnKeyType="done"
                 />
               </View>
             </ScrollView>
@@ -217,85 +217,85 @@ export default function WinEmergenteEditar({
   );
 }
 
-const s = StyleSheet.create({
-  modalBackground: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "100%",
-    maxWidth: 480,
-    height: "75%",
-    backgroundColor: mainThemeColors.backgroundCard,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 30,
-    elevation: 12,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 25,
-    borderBottomWidth: 1,
-    borderBottomColor: mainThemeColors.inputBorder,
-    paddingBottom: 10,
-  },
-  headerText: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: mainThemeColors.textTitle,
-  },
-  form: {
-    flexGrow: 1,
-  },
-  textLabel: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 6,
-    marginLeft: 12,
-    color: mainThemeColors.textValue,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: mainThemeColors.inputBorder,
-    borderRadius: 20,
-    paddingVertical: 14,
-    paddingHorizontal: 18,
-    marginBottom: 20,
-    backgroundColor: mainThemeColors.inputBackground,
-    fontSize: 16,
-    color: mainThemeColors.textInput,
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: mainThemeColors.errorButton,
-    borderColor: mainThemeColors.errorBorder,
-    borderWidth: 2,
-    paddingVertical: 14,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  acceptButton: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 25,
-    marginLeft: 10,
-    backgroundColor: mainThemeColors.inputBorder,
-    borderColor: mainThemeColors.textTitle,
-    borderWidth: 2,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
-    textAlign: "center",
-  },
-});
+const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
+  StyleSheet.create({
+    modalBackground: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.4)",
+      justifyContent: "flex-end",
+      alignItems: "center",
+    },
+    modalContainer: {
+      width: "100%",
+      maxWidth: "100%",
+      height: "75%",
+      backgroundColor: colors.backgroundCard,
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+      padding: 30,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 25,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.inputBorder,
+      paddingBottom: 10,
+    },
+    headerText: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: colors.textTitle,
+    },
+    form: {
+      flexGrow: 1,
+    },
+    textLabel: {
+      fontSize: 16,
+      fontWeight: "500",
+      marginBottom: 6,
+      marginLeft: 12,
+      color: colors.textValue,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.inputBorder,
+      borderRadius: 20,
+      paddingVertical: 14,
+      paddingHorizontal: 18,
+      marginBottom: 20,
+      backgroundColor: colors.inputBackground,
+      fontSize: 16,
+      color: colors.textInput,
+    },
+    buttons: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 10,
+    },
+    cancelButton: {
+      flex: 1,
+      backgroundColor: colors.errorButton,
+      borderColor: colors.errorBorder,
+      borderWidth: 2,
+      paddingVertical: 14,
+      borderRadius: 25,
+      marginRight: 10,
+    },
+    acceptButton: {
+      flex: 1,
+      paddingVertical: 14,
+      borderRadius: 25,
+      marginLeft: 10,
+      backgroundColor: colors.inputBorder,
+      borderColor: colors.textTitle,
+      borderWidth: 2,
+    },
+    buttonText: {
+      color: "#fff",
+      fontWeight: "600",
+      fontSize: 16,
+      textAlign: "center",
+    },
+  });

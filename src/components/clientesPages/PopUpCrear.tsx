@@ -13,7 +13,96 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { Cliente } from "../../data/Clientes";
-import { mainThemeColors } from "../../theme";
+import { useThemeColors } from "../../store/preferencesStore";
+
+const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
+  StyleSheet.create({
+    fab: {
+      position: "absolute",
+      bottom: 24,
+      right: 24,
+      backgroundColor: colors.primaryButton,
+      width: 56,
+      height: 56,
+      borderRadius: 16,
+      justifyContent: "center",
+      alignItems: "center",
+      elevation: 6,
+    },
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0, 0, 0, 0)",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 16,
+    },
+    popup: {
+      width: "100%",
+      maxWidth: 380,
+      backgroundColor: colors.backgroundCard,
+      borderRadius: 16,
+      padding: 20,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: "600",
+      marginBottom: 20,
+      textAlign: "center",
+      color: colors.textTitle,
+    },
+    lblTitle: {
+      fontSize: 16,
+      color: colors.textValue,
+      marginBottom: 6,
+    },
+    inputFondo: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.backgroundInput,
+      borderColor: colors.inputBorder,
+      borderWidth: 1,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      marginBottom: 16,
+      gap: 8,
+    },
+    input: {
+      flex: 1,
+      fontSize: 15,
+      color: colors.textInput,
+    },
+    buttons: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      gap: 12,
+      marginTop: 8,
+    },
+    cancelBtn: {
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+    },
+    cancelText: {
+      color: colors.grayLabelText,
+      fontSize: 15,
+    },
+    saveBtn: {
+      backgroundColor: colors.primaryButton,
+      paddingVertical: 10,
+      paddingHorizontal: 18,
+      borderRadius: 10,
+    },
+    saveText: {
+      color: "#fff",
+      fontSize: 15,
+      fontWeight: "600",
+    },
+  });
 
 export const PopUpCrear = ({
   visible,
@@ -30,6 +119,8 @@ export const PopUpCrear = ({
   const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
+  const colors = useThemeColors();
+  const s = createStyles(colors);
 
   const handleSave = () => {
     if (!nombre || !apellido || !email) return;
@@ -101,36 +192,36 @@ export const PopUpCrear = ({
 
               <Text style={s.lblTitle}>Nombre</Text>
               <View style={s.inputFondo}>
-                <Feather name="user" size={18} color={mainThemeColors.grayLabelText} />
+                <Feather name="user" size={18} color={colors.grayLabelText} />
                 <TextInput
                   value={nombre}
                   onChangeText={setNombre}
                   placeholder="Juan"
-                  placeholderTextColor={mainThemeColors.grayLabelText}
+                  placeholderTextColor={colors.grayLabelText}
                   style={s.input}
                 />
               </View>
 
               <Text style={s.lblTitle}>Apellido</Text>
               <View style={s.inputFondo}>
-                <Feather name="user" size={18} color={mainThemeColors.grayLabelText} />
+                <Feather name="user" size={18} color={colors.grayLabelText} />
                 <TextInput
                   value={apellido}
                   onChangeText={setApellido}
                   placeholder="Pérez"
-                  placeholderTextColor={mainThemeColors.grayLabelText}
+                  placeholderTextColor={colors.grayLabelText}
                   style={s.input}
                 />
               </View>
 
               <Text style={s.lblTitle}>Correo electrónico</Text>
               <View style={s.inputFondo}>
-                <Feather name="mail" size={18} color={mainThemeColors.grayLabelText} />
+                <Feather name="mail" size={18} color={colors.grayLabelText} />
                 <TextInput
                   value={email}
                   onChangeText={setEmail}
                   placeholder="correo@ejemplo.com"
-                  placeholderTextColor={mainThemeColors.grayLabelText}
+                  placeholderTextColor={colors.grayLabelText}
                   keyboardType="email-address"
                   style={s.input}
                 />
@@ -138,12 +229,12 @@ export const PopUpCrear = ({
 
               <Text style={s.lblTitle}>Teléfono</Text>
               <View style={s.inputFondo}>
-                <Feather name="phone" size={18} color={mainThemeColors.grayLabelText} />
+                <Feather name="phone" size={18} color={colors.grayLabelText} />
                 <TextInput
                   value={telefono}
                   onChangeText={setTelefono}
                   placeholder="600 123 456"
-                  placeholderTextColor={mainThemeColors.grayLabelText}
+                  placeholderTextColor={colors.grayLabelText}
                   keyboardType="phone-pad"
                   style={s.input}
                 />
@@ -169,91 +260,3 @@ export const PopUpCrear = ({
     </>
   );
 };
-
-const s = StyleSheet.create({
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    backgroundColor: mainThemeColors.primaryButton,
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 6,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-  },
-  popup: {
-    width: "100%",
-    maxWidth: 380,
-    backgroundColor: mainThemeColors.backgroundCard,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  lblTitle: {
-    fontSize: 16,
-    color: mainThemeColors.textValue,
-    marginBottom: 6,
-  },
-  inputFondo: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: mainThemeColors.backgroundInput,
-    borderColor: mainThemeColors.inputBorder,
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 16,
-    gap: 8,
-  },
-  input: {
-    flex: 1,
-    fontSize: 15,
-    color: mainThemeColors.textInput,
-    
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 12,
-    marginTop: 8,
-  },
-  cancelBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  cancelText: {
-    color: mainThemeColors.grayLabelText,
-    fontSize: 15,
-  },
-  saveBtn: {
-    backgroundColor: mainThemeColors.primaryButton,
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 10,
-  },
-  saveText: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "600",
-  },
-});
