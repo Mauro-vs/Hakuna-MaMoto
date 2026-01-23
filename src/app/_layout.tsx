@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { Stack } from 'expo-router';
 import { usePreferencesStore, useThemeColors } from '../store/preferencesStore';
+import { AuthProvider } from '../context/AuthContext';
 
 export default function RootLayout() {
   const cargarTema = usePreferencesStore((state) => state.cargarTema);
@@ -15,8 +16,10 @@ export default function RootLayout() {
   }, [cargarTema]);
 
   return (
-    <Stack
-      screenOptions={screenOptions}
-    />
+    <AuthProvider>
+      <Stack
+        screenOptions={screenOptions}
+      />
+    </AuthProvider>
   );
 }

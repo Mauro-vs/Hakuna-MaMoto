@@ -54,7 +54,7 @@ export default function Preferences() {
           title: `Preferencias`,
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.push("/profile")}
+              onPress={() => router.push("/profile/profile")}
               style={{ padding: 12 }}
             >
               <Feather

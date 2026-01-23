@@ -15,95 +15,6 @@ import { useState } from "react";
 import { Cliente } from "../../data/Clientes";
 import { useThemeColors } from "../../store/preferencesStore";
 
-const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
-  StyleSheet.create({
-    fab: {
-      position: "absolute",
-      bottom: 24,
-      right: 24,
-      backgroundColor: colors.primaryButton,
-      width: 56,
-      height: 56,
-      borderRadius: 16,
-      justifyContent: "center",
-      alignItems: "center",
-      elevation: 6,
-    },
-    overlay: {
-      flex: 1,
-      backgroundColor: "rgba(0, 0, 0, 0)",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 16,
-    },
-    popup: {
-      width: "100%",
-      maxWidth: 380,
-      backgroundColor: colors.backgroundCard,
-      borderRadius: 16,
-      padding: 20,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    title: {
-      fontSize: 20,
-      fontWeight: "600",
-      marginBottom: 20,
-      textAlign: "center",
-      color: colors.textTitle,
-    },
-    lblTitle: {
-      fontSize: 16,
-      color: colors.textValue,
-      marginBottom: 6,
-    },
-    inputFondo: {
-      flexDirection: "row",
-      alignItems: "center",
-      backgroundColor: colors.backgroundInput,
-      borderColor: colors.inputBorder,
-      borderWidth: 1,
-      borderRadius: 10,
-      paddingHorizontal: 12,
-      paddingVertical: 10,
-      marginBottom: 16,
-      gap: 8,
-    },
-    input: {
-      flex: 1,
-      fontSize: 15,
-      color: colors.textInput,
-    },
-    buttons: {
-      flexDirection: "row",
-      justifyContent: "flex-end",
-      gap: 12,
-      marginTop: 8,
-    },
-    cancelBtn: {
-      paddingVertical: 10,
-      paddingHorizontal: 16,
-    },
-    cancelText: {
-      color: colors.grayLabelText,
-      fontSize: 15,
-    },
-    saveBtn: {
-      backgroundColor: colors.primaryButton,
-      paddingVertical: 10,
-      paddingHorizontal: 18,
-      borderRadius: 10,
-    },
-    saveText: {
-      color: "#fff",
-      fontSize: 15,
-      fontWeight: "600",
-    },
-  });
-
 export const PopUpCrear = ({
   visible,
   setVisible,
@@ -260,3 +171,92 @@ export const PopUpCrear = ({
     </>
   );
 };
+
+const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
+  StyleSheet.create({
+    fab: {
+      position: "absolute",
+      bottom: 24,
+      right: 24,
+      backgroundColor: colors.primaryButton,
+      width: 56,
+      height: 56,
+      borderRadius: 16,
+      justifyContent: "center",
+      alignItems: "center",
+      elevation: 6,
+    },
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0, 0, 0, 0)",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 16,
+    },
+    popup: {
+      width: "100%",
+      maxWidth: 380,
+      backgroundColor: colors.backgroundInputPopup,
+      borderRadius: 16,
+      padding: 20,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: "600",
+      marginBottom: 20,
+      textAlign: "center",
+      color: colors.textTitle,
+    },
+    lblTitle: {
+      fontSize: 16,
+      color: colors.textValue,
+      marginBottom: 6,
+    },
+    inputFondo: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.inputBackground,
+      borderColor: colors.inputBorder,
+      borderWidth: 1,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      marginBottom: 16,
+      gap: 8,
+    },
+    input: {
+      flex: 1,
+      fontSize: 15,
+      color: colors.textInput,
+    },
+    buttons: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      gap: 12,
+      marginTop: 8,
+    },
+    cancelBtn: {
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+    },
+    cancelText: {
+      color: colors.grayLabelText,
+      fontSize: 15,
+    },
+    saveBtn: {
+      backgroundColor: colors.primaryButton,
+      paddingVertical: 10,
+      paddingHorizontal: 18,
+      borderRadius: 10,
+    },
+    saveText: {
+      color: "#fff",
+      fontSize: 15,
+      fontWeight: "600",
+    },
+  });

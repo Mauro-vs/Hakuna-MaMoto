@@ -2,14 +2,23 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View, Text, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeColors } from '../../store/preferencesStore';
-import { MenuOption } from '../../components/profilePages/menuOption';
+import { useThemeColors } from '../../../store/preferencesStore';
+import { MenuOption } from '../../../components/profilePages/menuOption';
+import { useUserStore } from '../../../store/userStore';
+import { useAuth } from '../../../context/AuthContext';
 
 
 export default function Profile() {
   const router = useRouter();
   const colors = useThemeColors();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const { logout } = useAuth();
+  const user = useUserStore((state) => state.user);
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/(login)/Login');
+  };
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.contentContainer}>
@@ -17,10 +26,11 @@ export default function Profile() {
       {/* Info rapida */}
       <View style={styles.profileCard}>
         <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>U</Text>
+          <Text style={styles.avatarText}>{(user?.nombre?.[0] ?? 'U').toUpperCase()}</Text>
         </View>
-        <Text style={styles.userName}>Usuario</Text>
-        <Text style={styles.userEmail}>usuario@example.com</Text>
+        <Text style={styles.userName}>{user?.nombre ?? 'Usuario'}</Text>
+        <Text style={styles.userEmail}>{user?.email ?? 'usuario@example.com'}</Text>
+        <Text style={styles.userRole}>Rol: {user?.rol ?? 'sin rol'}</Text>
       </View>
 
       {/* Información Personal */}
@@ -29,7 +39,7 @@ export default function Profile() {
         <MenuOption 
           icon="person-outline" 
           label="Información Personal"
-          onPress={() => router.replace('/profile')}
+          onPress={() => router.push('/profile/edit-profile')}
         />
       </View>
 
@@ -39,7 +49,7 @@ export default function Profile() {
         <MenuOption 
           icon="settings-outline" 
           label="Ajustes de Aplicación"
-          onPress={() => router.replace('/preferences')}
+          onPress={() => router.push('/preferences')}
         />
       </View>
 
@@ -49,7 +59,7 @@ export default function Profile() {
           styles.logoutButton,
           pressed && styles.logoutButtonPressed
         ]}
-        onPress={() => router.replace('/(login)/Login')}
+        onPress={handleLogout}
       >
         <Ionicons name="log-out-outline" size={20} color={colors.headerText} />
         <Text style={styles.logoutText}>Cerrar Sesión</Text>
@@ -104,6 +114,11 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
     userEmail: {
       fontSize: 14,
       color: colors.grayLabelText,
+    },
+    userRole: {
+      marginTop: 4,
+      fontSize: 13,
+      color: colors.textBody,
     },
     section: {
       marginBottom: 24,

@@ -1,13 +1,36 @@
-import React  from "react";
-import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
+import React, { useState }  from "react";
+import { View, Text, StyleSheet, Pressable, Image, Alert } from 'react-native';
 import { TextInput } from "react-native-paper";
 import LoginIcon from "./loginIcon";
 import ButtonGeneral from "./button";
 import { useThemeColors } from "../../store/preferencesStore";
+import { useAuth } from "../../context/AuthContext";
+import { useUserStore } from "../../store/userStore";
 
 export const LoginCard = () => {
-    const colors = useThemeColors();
-    const styles = createStyles(colors);
+        const colors = useThemeColors();
+        const styles = createStyles(colors);
+        const { login } = useAuth();
+        const setUser = useUserStore((state) => state.setUser);
+        const [email, setEmail] = useState("admin@test.com");
+        const [password, setPassword] = useState("123456");
+        const [loading, setLoading] = useState(false);
+
+        const handleLogin = async () => {
+            if (!email || !password) {
+                Alert.alert("Error", "Completa email y contraseña");
+                return;
+            }
+            try {
+                setLoading(true);
+                const user = await login(email, password);
+                setUser(user);
+            } catch (err) {
+                Alert.alert("Error de login", err instanceof Error ? err.message : "Error");
+            } finally {
+                setLoading(false);
+            }
+        };
 
   return (
     <View style={{flex: 1, width: '80%', maxWidth: 400}}>
@@ -24,9 +47,13 @@ export const LoginCard = () => {
             mode="outlined"
             placeholder="nombre@ejemplo.com"
             placeholderTextColor={colors.inputPlaceholder}
+            textColor={colors.textBody}
             outlineColor={colors.borderMain}
             activeOutlineColor={colors.borderLight}
             style={styles.paperInput}
+            value={email}
+            onChangeText={setEmail}
+            editable={!loading}
             left={<TextInput.Icon icon="email-outline" color={colors.inputPlaceholder} size={20} />}
         />
 
@@ -39,14 +66,18 @@ export const LoginCard = () => {
             placeholder="********"
             secureTextEntry={true}
             placeholderTextColor={colors.inputPlaceholder}
+            textColor={colors.textBody}
             outlineColor={colors.borderMain}
             activeOutlineColor={colors.borderLight}
             style={styles.paperInput}
+            value={password}
+            onChangeText={setPassword}
+            editable={!loading}
             left={<TextInput.Icon icon="lock-outline" color={colors.inputPlaceholder} size={20} />}
         />
 
         {/* Botón de inicio de sesión */}
-        <ButtonGeneral />
+        <ButtonGeneral onPress={handleLogin} isLoading={loading} />
 
         {/* Separador */}
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20}}>

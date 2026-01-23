@@ -15,104 +15,7 @@ import { clientesService } from "../../../services/clientesService";
 import WinEmergenteEditar from "../../../components/clientesPages/WinEmergenteEditar";
 import { useThemeColors } from "../../../store/preferencesStore";
 
-const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
-  StyleSheet.create({
-    container: {
-      padding: 16,
-      backgroundColor: colors.backgroundCard,
-    },
 
-    center: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: colors.backgroundMain,
-    },
-
-    loadingText: {
-      marginTop: 12,
-      color: colors.textValue,
-    },
-
-    error: {
-      color: colors.errorText,
-      fontSize: 16,
-    },
-
-    header: {
-      alignItems: "center",
-      marginBottom: 24,
-      gap: 8,
-    },
-
-    name: {
-      fontSize: 22,
-      fontWeight: "600",
-      color: colors.textTitle,
-    },
-
-    card: {
-      backgroundColor: colors.cardBackground,
-      borderRadius: 16,
-      padding: 16,
-      marginBottom: 20,
-      elevation: 3,
-    },
-
-    row: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 10,
-      marginBottom: 12,
-    },
-
-    value: {
-      fontSize: 15,
-      color: colors.textValue,
-    },
-
-    sectionTitle: {
-      fontSize: 16,
-      fontWeight: "600",
-      color: colors.textTitle,
-      marginBottom: 8,
-    },
-
-    pedido: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 10,
-      paddingVertical: 8,
-    },
-
-    pedidoText: {
-      fontSize: 14,
-      color: colors.textValue,
-    },
-
-    empty: {
-      fontSize: 14,
-      color: colors.grayPlaceholder,
-      textAlign: "center",
-    },
-    deleteButton: {
-      backgroundColor: colors.errorButton,
-      paddingVertical: 14,
-      borderRadius: 16,
-      justifyContent: "center",
-      marginRight: 15,
-      marginLeft: 15,
-      marginBottom: 15,
-      alignItems: "center",
-      borderWidth: 2,
-      borderColor: colors.errorBorder,
-      shadowColor: colors.errorButton,
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity: 0.1,
-      shadowRadius: 5,
-      elevation: 3,
-    },
-  });
 
 export default function ClienteDetallado() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -176,7 +79,7 @@ export default function ClienteDetallado() {
   }
 
   return (
-    <ScrollView contentContainerStyle={s.container}>
+    <View style={s.container}>
       <Stack.Screen
         options={{
           title: `Datos del Cliente: ${cliente.id}`,
@@ -277,6 +180,106 @@ export default function ClienteDetallado() {
           onGuardar={handleGuardar} // Pasa la función para actualizar el cliente
         />
       )}
-    </ScrollView>
+    </View>
   );
 }
+
+const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 16,
+      backgroundColor: colors.backgroundCard,
+    },
+
+    center: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: colors.backgroundMain,
+    },
+
+    loadingText: {
+      marginTop: 12,
+      color: colors.textValue,
+    },
+
+    error: {
+      color: colors.errorText,
+      fontSize: 16,
+    },
+
+    header: {
+      alignItems: "center",
+      marginBottom: 24,
+      gap: 8,
+    },
+
+    name: {
+      fontSize: 22,
+      fontWeight: "600",
+      color: colors.textTitle,
+    },
+
+    card: {
+      backgroundColor: colors.cardBackground,
+      borderRadius: 16,
+      padding: 16,
+      marginBottom: 20,
+      elevation: 3,
+    },
+
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      marginBottom: 12,
+    },
+
+    value: {
+      fontSize: 15,
+      color: colors.textValue,
+    },
+
+    sectionTitle: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors.textTitle,
+      marginBottom: 8,
+    },
+
+    pedido: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingVertical: 8,
+    },
+
+    pedidoText: {
+      fontSize: 14,
+      color: colors.textValue,
+    },
+
+    empty: {
+      fontSize: 14,
+      color: colors.grayPlaceholder,
+      textAlign: "center",
+    },
+    deleteButton: {
+      backgroundColor: colors.errorButton,
+      paddingVertical: 14,
+      borderRadius: 16,
+      justifyContent: "center",
+      marginRight: 15,
+      marginLeft: 15,
+      marginBottom: 15,
+      alignItems: "center",
+      borderWidth: 2,
+      borderColor: colors.errorBorder,
+      shadowColor: colors.errorButton,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.1,
+      shadowRadius: 5,
+      elevation: 3,
+    },
+  });

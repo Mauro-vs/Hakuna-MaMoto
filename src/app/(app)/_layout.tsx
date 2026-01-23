@@ -1,24 +1,31 @@
 import { useMemo } from "react";
-import { Tabs } from "expo-router";
+import { Tabs, Redirect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
 import { useThemeColors } from "../../store/preferencesStore";
+import { useAuth } from "../../context/AuthContext";
+import { useUserStore } from "../../store/userStore";
 
 export default function HomeLayout() {
   const ICON_SIZE = 30; 
   const colors = useThemeColors();
+  const { isSignedIn, isLoading } = useAuth();
+  const user = useUserStore((state) => state.user);
+  const isCliente = user?.rol === 'cliente';
 
   const screenOptions = useMemo(() => ({
     headerStyle: { backgroundColor: colors.primaryHeader },
     headerTintColor: colors.headerText,
     headerTitleAlign: "center" as const,
+    headerShadowVisible: false,
 
     tabBarStyle: {
       backgroundColor: colors.tabBackground,
       height: 90,
+      borderTopWidth: 0,
     },
     tabBarItemStyle: {
-      paddingTop: 14,
+      paddingTop: 15,
       justifyContent: "center" as const,
       alignItems: "center" as const,
     },
@@ -28,6 +35,9 @@ export default function HomeLayout() {
     tabBarActiveTintColor: colors.tabActive,
     tabBarInactiveTintColor: colors.tabInactive,
   }), [colors]);
+
+  if (isLoading) return null;
+  if (!isSignedIn) return <Redirect href="/(login)/Login" />;
 
   return (
     <Tabs
@@ -48,11 +58,12 @@ export default function HomeLayout() {
         }}
       />
 
-      {/* CLIENTES */}
+      {/* CLIENTES - Solo visible para admin y empleado */}
       <Tabs.Screen
         name="clientes/index"
         options={{
           title: "Clientes",
+          href: isCliente ? null : undefined,
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "people" : "people-outline"}
@@ -65,7 +76,7 @@ export default function HomeLayout() {
 
       {/* PROFILE */}
       <Tabs.Screen
-        name="profile"
+        name="profile/profile"
         options={{
           title: "Perfil",
           tabBarIcon: ({ focused }) => (
@@ -94,6 +105,7 @@ export default function HomeLayout() {
       {/* RUTA OCULTA */}
       <Tabs.Screen name="clientes/[id]" options={{ href: null }} />
       <Tabs.Screen name="preferences" options={{ href: null }} />
+      <Tabs.Screen name="profile/edit-profile" options={{ href: null }} />
     </Tabs>
   );
 }

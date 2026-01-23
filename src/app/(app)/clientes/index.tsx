@@ -1,4 +1,4 @@
-import { Stack, useFocusEffect } from "expo-router";
+import { Stack, useFocusEffect, Redirect } from "expo-router";
 import React, { useState, useCallback } from "react";
 import { View, FlatList, Text, StyleSheet } from "react-native";
 import { Cliente } from "../../../data/Clientes";
@@ -6,12 +6,19 @@ import { clientesService } from "../../../services/clientesService";
 import { PopUpCrear } from "../../../components/clientesPages/PopUpCrear";
 import { ListaClienteItem } from "../../../components/clientesPages/ListaClientes"; // tu render
 import { useThemeColors } from "../../../store/preferencesStore";
+import { useUserStore } from "../../../store/userStore";
 
 export default function HomeClientes() {
   const [list, setList] = useState<Cliente[]>([]);
   const [visible, setVisible] = useState(false);
   const colors = useThemeColors();
   const s = createStyles(colors);
+  const user = useUserStore((state) => state.user);
+
+  // Protección: solo admin y empleado pueden ver esta página
+  if (user?.rol === 'cliente') {
+    return <Redirect href="/home" />;
+  }
 
   // Carga inicial de clientes
   // const cargar = useCallback(() => {
@@ -38,7 +45,7 @@ export default function HomeClientes() {
     <>
       <Stack.Screen options={{ title: "Clientes" }} />
 
-      <View style={{ height: 18 }} />
+      <View style={{ height: 18, backgroundColor: colors.backgroundMain}} />
 
       {/* Lista de clientes */}
       <View style={s.pantalla}>

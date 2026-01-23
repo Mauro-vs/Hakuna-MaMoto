@@ -68,13 +68,13 @@ export const mainThemeColorsDark = {
   errorText: "#f5b5b5",
 
   // FONDOS (oscuro elegante con matiz azul marino)
-  backgroundCard: "#131b28",
+  backgroundCard: "#102033",
   backgroundMain: "#0f141f",
   backgroundInput: "#1a2e3d",
   backgroundInputPopup: "#1a2e3d",
 
   // NEUTROS
-  grayLabelText: "#d4e0ed",
+  grayLabelText: "#9da6b0",
   grayPlaceholder: "#7ec4b8",
   borderMain: "#2a4a5e",
   borderLight: "#1e3545",
@@ -86,7 +86,7 @@ export const mainThemeColorsDark = {
   textValue: "#8ddcd1",
   textSubtitle: "#6bb8e3",
   textSeparator: "#1e3545",
-  textInput: "#e5f3f0",
+  textInput: "#abb5b3",
 
   // INPUTS
   inputBorder: "#2a9d8f",

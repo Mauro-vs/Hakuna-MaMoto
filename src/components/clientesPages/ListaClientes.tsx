@@ -19,6 +19,7 @@ export const ListaClienteItem: React.FC<ItemProps> = ({ item }) => {
       ]}
       onPress={() => router.push({ pathname: "/(app)/clientes/[id]", params: { id: item.id } })}
     >
+      
       <View style={s.cabecera}>
         <View style={s.avatar}>
           <Text style={s.avatarTx}>{item.name.charAt(0)}</Text>
