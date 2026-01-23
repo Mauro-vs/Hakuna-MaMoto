@@ -25,12 +25,33 @@ export default function Profile() {
 
       {/* Info rapida */}
       <View style={styles.profileCard}>
-        <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>{(user?.nombre?.[0] ?? 'U').toUpperCase()}</Text>
+        <View style={styles.profileHeader}>
+          <View style={styles.avatarContainer}>
+            <Text style={styles.avatarText}>{(user?.nombre?.[0] ?? 'U').toUpperCase()}</Text>
+          </View>
+          
+          <View style={styles.headerContent}>
+            <Text style={styles.userName}>{user?.nombre ?? 'Usuario'}</Text>
+            <View style={[styles.roleBadge, { backgroundColor: colors.primaryButton }]}>
+              <Ionicons name="shield-checkmark" size={12} color="#ffffff" />
+              <Text style={styles.roleBadgeText}>{user?.rol ?? 'sin rol'}</Text>
+            </View>
+          </View>
         </View>
-        <Text style={styles.userName}>{user?.nombre ?? 'Usuario'}</Text>
-        <Text style={styles.userEmail}>{user?.email ?? 'usuario@example.com'}</Text>
-        <Text style={styles.userRole}>Rol: {user?.rol ?? 'sin rol'}</Text>
+
+        <View style={styles.divider} />
+
+        <View style={styles.profileInfo}>
+          <View style={styles.infoRow}>
+            <View style={styles.infoIcon}>
+              <Ionicons name="mail-outline" size={18} color="#ffffff" />
+            </View>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Correo Electrónico</Text>
+              <Text style={styles.infoValue}>{user?.email ?? 'usuario@example.com'}</Text>
+            </View>
+          </View>
+        </View>
       </View>
 
       {/* Información Personal */}
@@ -80,16 +101,23 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
     },
     profileCard: {
       backgroundColor: colors.backgroundCard,
-      borderRadius: 16,
+      borderRadius: 24,
       paddingVertical: 28,
-      paddingHorizontal: 20,
-      alignItems: 'center',
-      marginBottom: 28,
+      paddingHorizontal: 22,
+      marginBottom: 32,
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.08,
-      shadowRadius: 4,
-      elevation: 2,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.15,
+      shadowRadius: 16,
+      elevation: 8,
+      borderWidth: 0.5,
+      borderColor: colors.primaryButton,
+    },
+    profileHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 16,
+      marginBottom: 20,
     },
     avatarContainer: {
       width: 80,
@@ -98,18 +126,90 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       backgroundColor: colors.primaryButton,
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: 16,
+      shadowColor: colors.primaryButton,
+      shadowOpacity: 0.4,
+      shadowOffset: { width: 0, height: 6 },
+      shadowRadius: 12,
+      elevation: 8,
+      flexShrink: 0,
     },
     avatarText: {
       fontSize: 32,
-      fontWeight: '700',
+      fontWeight: '900',
       color: '#ffffff',
     },
+    headerContent: {
+      flex: 1,
+      gap: 10,
+    },
     userName: {
-      fontSize: 22,
-      fontWeight: '700',
+      fontSize: 20,
+      fontWeight: '900',
       color: colors.textTitle,
-      marginBottom: 6,
+      letterSpacing: 0.3,
+    },
+    roleBadge: {
+      paddingVertical: 7,
+      paddingHorizontal: 11,
+      borderRadius: 10,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      alignSelf: 'flex-start',
+      shadowColor: colors.primaryButton,
+      shadowOpacity: 0.2,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    roleBadgeText: {
+      fontSize: 11,
+      fontWeight: '800',
+      color: '#ffffff',
+      textTransform: 'capitalize',
+      letterSpacing: 0.3,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: colors.grayLabelText,
+      opacity: 0.12,
+      marginBottom: 20,
+    },
+    profileInfo: {
+      gap: 0,
+    },
+    infoRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 14,
+    },
+    infoIcon: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      backgroundColor: colors.primaryButton,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 2,
+    },
+    infoContent: {
+      flex: 1,
+      justifyContent: 'center',
+      paddingVertical: 2,
+    },
+    infoLabel: {
+      fontSize: 11,
+      fontWeight: '700',
+      color: colors.grayLabelText,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+      marginBottom: 4,
+    },
+    infoValue: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textBody,
+      letterSpacing: 0.1,
     },
     userEmail: {
       fontSize: 14,
