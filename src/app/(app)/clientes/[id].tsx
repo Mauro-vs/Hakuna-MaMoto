@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -11,57 +11,38 @@ import {
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { Cliente } from "../../../data/Clientes";
-import { clientesService } from "../../../services/clientesService";
 import WinEmergenteEditar from "../../../components/clientesPages/WinEmergenteEditar";
 import { useThemeColors } from "../../../store/preferencesStore";
+import {
+  useCliente,
+  useClientesList,
+  useDeleteCliente,
+  useUpdateCliente,
+} from "../../../hooks/useClientes";
 
 
 
 export default function ClienteDetallado() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const clientId = Number(id);
-  const [cliente, setCliente] = useState<Cliente | null>(null);
-  const [cargando, setCargando] = useState(true);
   const [editarVisible, setEditarVisible] = useState(false);
   const colors = useThemeColors();
   const s = createStyles(colors);
+  const { data: cliente, isLoading } = useCliente(clientId);
+  const { data: list } = useClientesList();
+  const updateCliente = useUpdateCliente();
+  const deleteCliente = useDeleteCliente();
 
-  useEffect(() => {
-    let mounted = true;
+  const existingEmails = useMemo(
+    () =>
+      (list ?? [])
+        .filter((c) => c.id !== clientId)
+        .map((c) => c.email)
+        .filter((email): email is string => !!email),
+    [list, clientId],
+  );
 
-    (async () => {
-      setCargando(true);
-      const c = clientesService.getClienteById(clientId);
-      if (mounted) {
-        setCliente(c || null);
-        setCargando(false);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [clientId]);
-
-  const handleGuardar = (clienteActualizado: {
-    nombre: string;
-    apellido: string;
-    email: string;
-    telefono: string;
-  }) => {
-    // Actualizamos los datos en el estado del padre
-    if (cliente) {
-      setCliente({
-        ...cliente,
-        name: clienteActualizado.nombre,
-        surname: clienteActualizado.apellido,
-        email: clienteActualizado.email,
-        phoneNumber: clienteActualizado.telefono,
-      });
-    }
-  };
-
-  if (cargando) {
+  if (isLoading) {
     return (
       <View style={s.center}>
         <ActivityIndicator size="large" color={colors.primaryHeader} />
@@ -127,10 +108,10 @@ export default function ClienteDetallado() {
       <Text style={s.sectionTitle}>Últimos pedidos</Text>
 
       <View style={s.card}>
-        {cliente.pedidos.length === 0 ? (
+        {(cliente.pedidos ?? []).length === 0 ? (
           <Text style={s.empty}>Este cliente no tiene pedidos</Text>
         ) : (
-          cliente.pedidos.map((p, i) => (
+          (cliente.pedidos ?? []).map((p, i) => (
             <View key={i} style={s.pedido}>
               <Feather name="shopping-bag" size={16} color={colors.grayLabelText} />
               <Text style={s.pedidoText}>{p}</Text>
@@ -152,8 +133,13 @@ export default function ClienteDetallado() {
           {
             text: "Eliminar",
             onPress: async () => {
-              clientesService.deleteCliente(cliente.id);
-              router.push("/clientes");
+              try {
+                await deleteCliente.mutateAsync(cliente.id);
+                router.push("/clientes");
+              } catch (error) {
+                Alert.alert("Error", "No se pudo eliminar el cliente");
+                console.error(error);
+              }
             },
             style: "destructive",
           },
@@ -177,7 +163,21 @@ export default function ClienteDetallado() {
             telefono: cliente.phoneNumber,
           }}
           setVisible={setEditarVisible}
-          onGuardar={handleGuardar} // Pasa la función para actualizar el cliente
+          existingEmails={existingEmails}
+          onUpdate={async (clienteActualizado) => {
+            await updateCliente.mutateAsync({
+              id: cliente.id,
+              data: {
+                name: clienteActualizado.nombre,
+                surname: clienteActualizado.apellido,
+                email: clienteActualizado.email,
+                phoneNumber: clienteActualizado.telefono,
+              },
+            });
+          }}
+          onDelete={async () => {
+            await deleteCliente.mutateAsync(cliente.id);
+          }}
         />
       )}
     </View>

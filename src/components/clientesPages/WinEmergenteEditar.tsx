@@ -12,7 +12,6 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { clientesService } from "../../services/clientesService";
 import { router } from "expo-router";
 import { useThemeColors } from "../../store/preferencesStore";
 
@@ -25,18 +24,22 @@ interface ClienteInfo {
     telefono: string;
   };
   setVisible: (v: boolean) => void;
-  onGuardar: (clienteActualizado: {
+  existingEmails?: string[];
+  onUpdate: (clienteActualizado: {
     nombre: string;
     apellido: string;
     email: string;
     telefono: string;
-  }) => void;
+  }) => Promise<void>;
+  onDelete: () => Promise<void>;
 }
 
 export default function WinEmergenteEditar({
   cliente,
   setVisible,
-  onGuardar,
+  onUpdate,
+  onDelete,
+  existingEmails,
 }: ClienteInfo) {
   const [modalVisible, setModalVisible] = useState(true);
   const [clienteEdit, setClienteEdit] = useState(cliente);
@@ -56,15 +59,9 @@ export default function WinEmergenteEditar({
         {
           text: "Eliminar",
           style: "destructive",
-          onPress: () => {
+          onPress: async () => {
             try {
-              clientesService.deleteCliente(cliente.id);
-              onGuardar({
-                nombre: "",
-                apellido: "",
-                email: "",
-                telefono: "",
-              });
+              await onDelete();
               setModalVisible(false);
               setVisible(false);
               router.push("/clientes");
@@ -78,7 +75,7 @@ export default function WinEmergenteEditar({
     );
   };
 
-  const handleAceptar = () => {
+  const handleAceptar = async () => {
     try {
       if (!clienteEdit.nombre || !clienteEdit.apellido || !clienteEdit.email) {
         Alert.alert("Error", "Nombre, Apellidos y Email son obligatorios");
@@ -94,12 +91,9 @@ export default function WinEmergenteEditar({
         return;
       }
       // Validacion de duplicados
-      const clientesExistentes = clientesService.getAllClientes();
       if (
-        clientesExistentes.some(
-          (c) =>
-            c.id !== cliente.id &&
-            c.email.toLowerCase() === clienteEdit.email.toLowerCase(),
+        existingEmails?.some(
+          (email) => email.toLowerCase() === clienteEdit.email.toLowerCase(),
         )
       ) {
         Alert.alert(
@@ -115,8 +109,7 @@ export default function WinEmergenteEditar({
         return;
       }
 
-      clientesService.updateCliente(cliente.id, clienteEdit);
-      onGuardar(clienteEdit);
+      await onUpdate(clienteEdit);
       setModalVisible(false);
       setVisible(false);
     } catch (error) {

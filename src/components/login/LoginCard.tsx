@@ -12,8 +12,8 @@ export const LoginCard = () => {
         const styles = createStyles(colors);
         const { login } = useAuth();
         const setUser = useUserStore((state) => state.setUser);
-        const [email, setEmail] = useState("admin@test.com");
-        const [password, setPassword] = useState("123456");
+        const [email, setEmail] = useState("admin@admin.com");
+        const [password, setPassword] = useState("admin1234");
         const [loading, setLoading] = useState(false);
 
         const handleLogin = async () => {
@@ -44,12 +44,13 @@ export const LoginCard = () => {
         {/* Campos de entrada */}
         <Text style={styles.inputText}>Correo Electrónico</Text>
         <TextInput
-            mode="outlined"
+            mode="flat"
             placeholder="nombre@ejemplo.com"
             placeholderTextColor={colors.inputPlaceholder}
             textColor={colors.textBody}
-            outlineColor={colors.borderMain}
-            activeOutlineColor={colors.borderLight}
+            underlineColor={colors.borderMain}
+            activeUnderlineColor={colors.borderLight}
+            selectionColor={colors.primaryButton}
             style={styles.paperInput}
             value={email}
             onChangeText={setEmail}
@@ -62,13 +63,14 @@ export const LoginCard = () => {
             <Text style={styles.inputTextPassword} onPress={() => {}}>¿Olvidaste tu contraseña?</Text>
         </View>
         <TextInput
-            mode="outlined"
+            mode="flat"
             placeholder="********"
             secureTextEntry={true}
             placeholderTextColor={colors.inputPlaceholder}
             textColor={colors.textBody}
-            outlineColor={colors.borderMain}
-            activeOutlineColor={colors.borderLight}
+            underlineColor={colors.borderMain}
+            activeUnderlineColor={colors.borderLight}
+            selectionColor={colors.primaryButton}
             style={styles.paperInput}
             value={password}
             onChangeText={setPassword}

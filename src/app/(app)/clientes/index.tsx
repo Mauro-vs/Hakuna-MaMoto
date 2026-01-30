@@ -1,45 +1,43 @@
-import { Stack, useFocusEffect, Redirect } from "expo-router";
-import React, { useState, useCallback } from "react";
-import { View, FlatList, Text, StyleSheet } from "react-native";
+import { Stack, Redirect } from "expo-router";
+import React from "react";
+import { View, FlatList, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { Cliente } from "../../../data/Clientes";
-import { clientesService } from "../../../services/clientesService";
 import { PopUpCrear } from "../../../components/clientesPages/PopUpCrear";
 import { ListaClienteItem } from "../../../components/clientesPages/ListaClientes"; // tu render
 import { useThemeColors } from "../../../store/preferencesStore";
 import { useUserStore } from "../../../store/userStore";
+import { useClientesList, useCreateCliente } from "../../../hooks/useClientes";
 
 export default function HomeClientes() {
-  const [list, setList] = useState<Cliente[]>([]);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = React.useState(false);
   const colors = useThemeColors();
   const s = createStyles(colors);
   const user = useUserStore((state) => state.user);
+  const { data, isLoading, isError } = useClientesList();
+  const createCliente = useCreateCliente();
+  const list: Cliente[] = data ?? [];
 
   // Protección: solo admin y empleado pueden ver esta página
   if (user?.rol === 'cliente') {
     return <Redirect href="/home" />;
   }
 
-  // Carga inicial de clientes
-  // const cargar = useCallback(() => {
-  //   const data = clientesService.getAllClientes();
-  //   setList(data);
-  // }, []);
-
-    useFocusEffect(
-        useCallback(() => {
-           let isActive = true;
-           const data = clientesService.getAllClientes();
-           setList(data);
-            return () => {
-                isActive = false;
-            };
-        }, [])
+  if (isLoading) {
+    return (
+      <View style={[s.pantalla, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color={colors.primaryButton} />
+        <Text style={{ marginTop: 12, color: colors.grayLabelText }}>Cargando clientes...</Text>
+      </View>
     );
+  }
 
-  // React.useEffect(() => {
-  //   cargar();
-  // }, [cargar]);
+  if (isError) {
+    return (
+      <View style={[s.pantalla, { justifyContent: "center", alignItems: "center" }]}>
+        <Text style={{ color: colors.errorText }}>Error cargando clientes</Text>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -67,11 +65,14 @@ export default function HomeClientes() {
           existingClientes={list}
           visible={visible}
           setVisible={setVisible}
-          onSave={(nuevoCliente) => {
-            // Guardamos en el servicio para que la pantalla [id] pueda encontrarlo
-            clientesService.addCliente(nuevoCliente);
-            // Actualizamos la lista y la UI
-            setList((prev) => [...prev, nuevoCliente]);
+          onSave={async (nuevoCliente) => {
+            try {
+              const creado = await createCliente.mutateAsync(nuevoCliente);
+              return creado;
+            } catch (error) {
+              console.error(error);
+              return null;
+            }
           }}
         />
       </View>

@@ -1,72 +1,131 @@
-import { Cliente, clientes } from "../data/Clientes";
-
-let clientesDB: Cliente[] = [...clientes];
+import type { Cliente } from "../data/Clientes";
+import { supabase } from "./supabaseClient";
 
 export const clientesService = {
-  /** Devuelve todos los clientes (copia segura) */
-  getAllClientes(): Cliente[] {
-    return [...clientesDB];
+  /** Devuelve todos los clientes */
+  async getAllClientes(): Promise<Cliente[]> {
+    const { data, error } = await supabase
+      .from("clientes")
+      .select("id, nombre, apellidos, email, telefono")
+      .order("id", { ascending: true });
+
+    if (error) throw error;
+    return (data ?? []).map((row) => ({
+      id: row.id,
+      name: row.nombre,
+      surname: row.apellidos ?? "",
+      email: row.email,
+      phoneNumber: row.telefono ?? "",
+      pedidos: [],
+    }));
   },
 
   /** Devuelve un cliente por id o null si no existe */
-  getClienteById(id: number): Cliente | null {
-    return clientesDB.find(c => c.id === id) ?? null;
+  async getClienteById(id: number): Promise<Cliente | null> {
+    const { data, error } = await supabase
+      .from("clientes")
+      .select("id, nombre, apellidos, email, telefono")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+    return {
+      id: data.id,
+      name: data.nombre,
+      surname: data.apellidos ?? "",
+      email: data.email,
+      phoneNumber: data.telefono ?? "",
+      pedidos: [],
+    } as Cliente;
   },
 
-  /** Añade un cliente y genera el id automáticamente */
-  addCliente(data: Omit<Cliente, "id">): Cliente {
-    const newCliente: Cliente = {
-      id: this.getNextId(),
-      ...data,
+  /** Añade un cliente */
+  async addCliente(data: Omit<Cliente, "id">): Promise<Cliente> {
+    const payload = {
+      nombre: data.name,
+      apellidos: data.surname,
+      email: data.email,
+      telefono: data.phoneNumber,
     };
-    clientesDB.push(newCliente);
-    return newCliente;
+
+    const { data: inserted, error } = await supabase
+      .from("clientes")
+      .insert(payload)
+      .select("id, nombre, apellidos, email, telefono")
+      .single();
+
+    if (error) throw error;
+    return {
+      id: inserted.id,
+      name: inserted.nombre,
+      surname: inserted.apellidos ?? "",
+      email: inserted.email,
+      phoneNumber: inserted.telefono ?? "",
+      pedidos: [],
+    } as Cliente;
   },
 
   /** Actualiza solo los campos indicados */
-  updateCliente(
+  async updateCliente(
     id: number,
     data: Partial<Omit<Cliente, "id">>
-  ): boolean {
-    const index = clientesDB.findIndex(c => c.id === id);
-    if (index === -1) return false;
+  ): Promise<boolean> {
+    const payload: Record<string, unknown> = {};
+    if (data.name !== undefined) payload.nombre = data.name;
+    if (data.surname !== undefined) payload.apellidos = data.surname;
+    if (data.email !== undefined) payload.email = data.email;
+    if (data.phoneNumber !== undefined) payload.telefono = data.phoneNumber;
 
-    clientesDB[index] = {
-      ...clientesDB[index],
-      ...data,
-    };
+    const { error } = await supabase
+      .from("clientes")
+      .update(payload)
+      .eq("id", id);
+
+    if (error) throw error;
     return true;
   },
 
   /** Elimina un cliente por id */
-  deleteCliente(id: number): boolean {
-    const index = clientesDB.findIndex(c => c.id === id);
-    if (index === -1) return false;
+  async deleteCliente(id: number): Promise<boolean> {
+    const { error } = await supabase
+      .from("clientes")
+      .delete()
+      .eq("id", id);
 
-    clientesDB.splice(index, 1);
+    if (error) throw error;
     return true;
   },
 
   /** Busca clientes por nombre, apellido o email */
-  searchClientes(query: string): Cliente[] {
-    const q = query.toLowerCase();
-    return clientesDB.filter(
-      c =>
-        c.name.toLowerCase().includes(q) ||
-        c.surname.toLowerCase().includes(q) ||
-        c.email.toLowerCase().includes(q)
-    );
+  async searchClientes(query: string): Promise<Cliente[]> {
+    const q = `%${query}%`;
+    const { data, error } = await supabase
+      .from("clientes")
+      .select("id, nombre, apellidos, email, telefono")
+      .or(`nombre.ilike.${q},apellidos.ilike.${q},email.ilike.${q}`)
+      .order("id", { ascending: true });
+
+    if (error) throw error;
+    return (data ?? []).map((row) => ({
+      id: row.id,
+      name: row.nombre,
+      surname: row.apellidos ?? "",
+      email: row.email,
+      phoneNumber: row.telefono ?? "",
+      pedidos: [],
+    }));
   },
 
   /** Comprueba si existe un cliente */
-  exists(id: number): boolean {
-    return clientesDB.some(c => c.id === id);
-  },
+  async exists(id: number): Promise<boolean> {
+    const { data, error } = await supabase
+      .from("clientes")
+      .select("id")
+      .eq("id", id)
+      .maybeSingle();
 
-  /** Genera el siguiente id disponible */
-  getNextId(): number {
-    return clientesDB.length
-      ? Math.max(...clientesDB.map(c => c.id)) + 1
-      : 1;
+    if (error) throw error;
+    return !!data;
   },
 };

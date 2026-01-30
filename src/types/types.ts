@@ -9,46 +9,28 @@ export interface AuthUser {
   rol: UserRole;
 }
 
-export interface AuthCredential {
-  password: string;
-  user: AuthUser;
-}
-
-// Datos de login mock
-export const mockAuthUsers: Record<string, AuthCredential> = {
-  "admin@test.com": {
-    password: "123456",
-    user: { id: "1", email: "admin@test.com", nombre: "Admin", rol: "admin" },
-  },
-  "client@test.com": {
-    password: "123456",
-    user: { id: "2", email: "client@test.com", nombre: "Cliente", rol: "cliente" },
-  },
-  "empleado@test.com": {
-    password: "123456",
-    user: { id: "3", email: "empleado@test.com", nombre: "Empleado", rol: "empleado" },
-  },
-};
-
 // mockApi.ts
 // Datos ficticios + tipos para simular servicios en una app React Native
 
 // 1. TIPOS BÁSICOS
 // =====================================================
 
-export type RoleName = 'NORMAL' | 'ADMIN';
+export type RoleName = 'NORMAL' | 'ADMIN' | 'MECANICO';
 
 export interface Role {
-  id: number;
+  id: string;
   name: RoleName;
   description?: string;
 }
 
 export interface User {
-  id: number;
-  roleId: number;
+  id: string;
+  rol: RoleName;
   name: string;
+  apellidos?: string;
   email: string;
+  telefono?: string;
+  activo?: boolean;
 }
 
 export type EstadoPedido =
@@ -160,28 +142,6 @@ export interface PedidoConDetalle extends Pedido {
 
 // 2. DATOS FICTICIOS
 // -----------------------------------------------------
-
-// Roles
-export const roles: Role[] = [
-  { id: 1, name: 'NORMAL', description: 'Usuario operativo' },
-  { id: 2, name: 'ADMIN', description: 'Administrador del sistema' },
-];
-
-// Usuarios
-export const usuarios: User[] = [
-  {
-    id: 1,
-    roleId: 2,
-    name: 'Admin Principal',
-    email: 'admin@alquilerapp.com',
-  },
-  {
-    id: 2,
-    roleId: 1,
-    name: 'Operario 1',
-    email: 'operario1@alquilerapp.com',
-  },
-];
 
 // Clientes
 export const clientes: Cliente[] = [

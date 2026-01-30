@@ -23,7 +23,7 @@ export const PopUpCrear = ({
 }: {
   visible: boolean;
   setVisible: (v: boolean) => void;
-  onSave: (nuevoCliente: Cliente) => void;
+  onSave: (nuevoCliente: Omit<Cliente, "id">) => Promise<Cliente | null>;
   existingClientes: Cliente[];
 }) => {
   const [nombre, setNombre] = useState("");
@@ -33,13 +33,8 @@ export const PopUpCrear = ({
   const colors = useThemeColors();
   const s = createStyles(colors);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!nombre || !apellido || !email) return;
-
-    let newId = Math.floor(Math.random() * 1000);
-    while (existingClientes.some((c) => c.id === newId)) {
-      newId = Math.floor(Math.random() * 10000);
-    }
 
     //Validaciones básicas
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -60,8 +55,7 @@ export const PopUpCrear = ({
     }
 
     // Creamos el nuevo cliente
-    const nuevoCliente: Cliente = {
-      id: newId,
+    const nuevoCliente: Omit<Cliente, "id"> = {
       name: nombre,
       surname: apellido,
       email,
@@ -70,7 +64,7 @@ export const PopUpCrear = ({
     };
 
     // Guardamos en el service
-    onSave(nuevoCliente);
+    await onSave(nuevoCliente);
 
     // Limpiamos inputs y cerramos
     setNombre("");

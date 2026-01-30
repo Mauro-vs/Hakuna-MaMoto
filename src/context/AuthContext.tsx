@@ -1,7 +1,11 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUserStore } from "../store/userStore";
-import { loginService, logoutService } from "../services/authService";
+import {
+  loginService,
+  logoutService,
+  onAuthStateChange,
+} from "../services/authService";
+import { supabase } from "../services/supabaseClient";
 import { AuthUser } from "../types/types";
 
 interface AuthContextValue {
@@ -20,17 +24,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { setUser: setUserStore, clearUser } = useUserStore.getState();
 
   useEffect(() => {
+    let mounted = true;
+
     (async () => {
       try {
-        const saved = await AsyncStorage.getItem("auth_user");
-        if (saved) {
-          const parsed: AuthUser = JSON.parse(saved);
-          setUser(parsed);
+        const { data } = await supabase.auth.getSession();
+        if (!mounted) return;
+        if (data.session?.user) {
+          // onAuthStateChange will enrich the user
+        } else {
+          setUser(null);
         }
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     })();
+
+    const { data: subscription } = onAuthStateChange((nextUser) => {
+      setUser(nextUser);
+    });
+
+    return () => {
+      mounted = false;
+      subscription.subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -58,7 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await logoutService();
       setUser(null);
-      await AsyncStorage.removeItem("auth_user");
     } finally {
       setIsLoading(false);
     }
