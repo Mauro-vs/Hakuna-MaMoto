@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Tabs, Redirect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { View } from "react-native";
+import { View, StatusBar } from "react-native";
 import { useThemeColors } from "../../store/preferencesStore";
 import { useAuth } from "../../context/AuthContext";
 import { useUserStore } from "../../store/userStore";
@@ -40,9 +40,14 @@ export default function HomeLayout() {
   if (!isSignedIn) return <Redirect href="/(login)/Login" />;
 
   return (
-    <Tabs
-      screenOptions={screenOptions}
-    >
+    <>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={colors.primaryHeader}
+      />
+      <Tabs
+        screenOptions={screenOptions}
+      >
       {/* HOME */}
       <Tabs.Screen
         name="home"
@@ -107,5 +112,6 @@ export default function HomeLayout() {
       <Tabs.Screen name="preferences" options={{ href: null }} />
       <Tabs.Screen name="profile/edit-profile" options={{ href: null }} />
     </Tabs>
+    </>
   );
 }
