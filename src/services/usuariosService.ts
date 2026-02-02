@@ -5,17 +5,15 @@ const mapUsuario = (row: {
   id: string;
   rol: string;
   nombre: string;
-  apellidos?: string | null;
   email: string;
-  telefono?: string | null;
+  avatar_url?: string | null;
   activo?: boolean | null;
 }): User => ({
   id: row.id,
   rol: row.rol as User["rol"],
   name: row.nombre,
-  apellidos: row.apellidos ?? undefined,
   email: row.email,
-  telefono: row.telefono ?? undefined,
+  avatarUrl: row.avatar_url ?? undefined,
   activo: row.activo ?? undefined,
 });
 
@@ -23,7 +21,7 @@ export const usuariosService = {
   async getAll(): Promise<User[]> {
     const { data, error } = await supabase
       .from("usuarios")
-      .select("id, rol, nombre, email, telefono, activo")
+      .select("id, rol, nombre, email, avatar_url, activo")
       .order("nombre", { ascending: true });
 
     if (error) throw error;
@@ -33,7 +31,7 @@ export const usuariosService = {
   async getById(id: string): Promise<User | null> {
     const { data, error } = await supabase
       .from("usuarios")
-      .select("id, rol, nombre, email, telefono, activo")
+      .select("id, rol, nombre, email, avatar_url, activo")
       .eq("id", id)
       .maybeSingle();
 
@@ -44,7 +42,7 @@ export const usuariosService = {
   async getByEmail(email: string): Promise<User | null> {
     const { data, error } = await supabase
       .from("usuarios")
-      .select("id, rol, nombre, email, telefono, activo")
+      .select("id, rol, nombre, email, avatar_url, activo")
       .eq("email", email)
       .maybeSingle();
 
@@ -59,10 +57,10 @@ export const usuariosService = {
         rol: input.rol,
         nombre: input.name,
         email: input.email,
-        telefono: input.telefono ?? null,
+        avatar_url: input.avatarUrl ?? null,
         activo: input.activo ?? true,
       })
-      .select("id, rol, nombre, email, telefono, activo")
+      .select("id, rol, nombre, email, avatar_url, activo")
       .single();
 
     if (error) throw error;
@@ -71,18 +69,22 @@ export const usuariosService = {
 
   async update(id: string, input: Partial<Omit<User, "id">>): Promise<boolean> {
     const payload: Record<string, unknown> = {};
-    if (input.rol) payload.rol = input.rol;
     if (input.name) payload.nombre = input.name;
     if (input.email) payload.email = input.email;
-    if (input.telefono !== undefined) payload.telefono = input.telefono ?? null;
+    if (input.avatarUrl !== undefined) payload.avatar_url = input.avatarUrl ?? null;
     if (input.activo !== undefined) payload.activo = input.activo;
 
     const { error } = await supabase
       .from("usuarios")
       .update(payload)
       .eq("id", id);
+    
+    const { data, error: errorAuth } = await supabase.auth.updateUser({
+    email: payload.email as string,
+})
 
-    if (error) throw error;
+
+    if (error || errorAuth) throw error;
     return true;
   },
 

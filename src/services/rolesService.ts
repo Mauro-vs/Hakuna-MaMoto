@@ -1,9 +1,9 @@
 import { supabase } from "./supabaseClient";
-import type { Role, RoleName } from "../types/types";
+import type { Role, UserRole } from "../types/types";
 
 const mapRole = (row: { id: string; nombre: string; descripcion?: string | null }): Role => ({
   id: row.id,
-  name: row.nombre as RoleName,
+  name: row.nombre as UserRole,
   description: row.descripcion ?? undefined,
 });
 
@@ -29,7 +29,7 @@ export const rolesService = {
     return data ? mapRole(data) : null;
   },
 
-  async create(input: { name: RoleName; description?: string }): Promise<Role> {
+  async create(input: { name: UserRole; description?: string }): Promise<Role> {
     const { data, error } = await supabase
       .from("roles")
       .insert({ nombre: input.name, descripcion: input.description ?? null })
@@ -40,8 +40,8 @@ export const rolesService = {
     return mapRole(data);
   },
 
-  async update(id: string, input: Partial<{ name: RoleName; description?: string }>): Promise<boolean> {
-    const payload: { nombre?: RoleName; descripcion?: string | null } = {};
+  async update(id: string, input: Partial<{ name: UserRole; description?: string }>): Promise<boolean> {
+    const payload: { nombre?: UserRole; descripcion?: string | null } = {};
     if (input.name) payload.nombre = input.name;
     if (input.description !== undefined) payload.descripcion = input.description ?? null;
 

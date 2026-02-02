@@ -11,7 +11,7 @@ export default function HomeLayout() {
   const colors = useThemeColors();
   const { isSignedIn, isLoading } = useAuth();
   const user = useUserStore((state) => state.user);
-  const isCliente = user?.rol === 'cliente';
+  const isCliente = user?.rol === 'NORMAL';
 
   const screenOptions = useMemo(() => ({
     headerStyle: { backgroundColor: colors.primaryHeader },

@@ -15,17 +15,17 @@ export function AdminPanel({ rol }: AdminPanelProps) {
 	if (!rol) return null;
 
 	const config: Record<UserRole, { title: string; icon: any; desc: string }> = {
-		admin: {
+		ADMIN: {
 			title: "Panel de administración",
 			icon: "shield-checkmark",
 			desc: "Tienes acceso a todas las funciones del sistema, incluyendo gestión de usuarios y configuración avanzada.",
 		},
-		empleado: {
+		MECANICO: {
 			title: "Área de trabajo",
 			icon: "briefcase",
 			desc: "Puedes ver y gestionar clientes, pedidos y realizar seguimiento de operaciones.",
 		},
-		cliente: {
+		NORMAL: {
 			title: "Tu espacio",
 			icon: "heart",
 			desc: "Accede a tu perfil y personaliza tus preferencias de aplicación.",

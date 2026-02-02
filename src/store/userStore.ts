@@ -5,6 +5,8 @@ interface UserStore {
   user: AuthUser | null;
   setUser: (user: AuthUser | null) => void;
   updateNombre: (nombre: string) => void;
+  updateEmail: (email: string) => void;
+  updateRol: (rol: AuthUser["rol"]) => void;
   clearUser: () => void;
 }
 
@@ -13,6 +15,12 @@ export const useUserStore = create<UserStore>((set) => ({
   setUser: (user) => set({ user }),
   updateNombre: (nombre) => set((state) => ({
     user: state.user ? { ...state.user, nombre } : null,
+  })),
+  updateEmail: (email) => set((state) => ({
+    user: state.user ? { ...state.user, email } : null,
+  })),
+  updateRol: (rol) => set((state) => ({
+    user: state.user ? { ...state.user, rol } : null,
   })),
   clearUser: () => set({ user: null }),
 }));

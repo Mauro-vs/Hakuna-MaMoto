@@ -7,6 +7,7 @@ import {
 } from "../services/authService";
 import { supabase } from "../services/supabaseClient";
 import { AuthUser } from "../types/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AuthContextValue {
   user: AuthUser | null;

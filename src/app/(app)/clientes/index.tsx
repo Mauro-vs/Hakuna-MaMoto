@@ -18,7 +18,7 @@ export default function HomeClientes() {
   const list: Cliente[] = data ?? [];
 
   // Protección: solo admin y empleado pueden ver esta página
-  if (user?.rol === 'cliente') {
+  if (user?.rol === 'NORMAL') {
     return <Redirect href="/home" />;
   }
 

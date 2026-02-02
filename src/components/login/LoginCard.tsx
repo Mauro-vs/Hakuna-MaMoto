@@ -26,6 +26,7 @@ export const LoginCard = () => {
                 const user = await login(email, password);
                 setUser(user);
             } catch (err) {
+                console.log(err);
                 Alert.alert("Error de login", err instanceof Error ? err.message : "Error");
             } finally {
                 setLoading(false);

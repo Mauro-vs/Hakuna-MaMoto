@@ -13,6 +13,9 @@ import { Stack, useRouter } from "expo-router";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../../store/preferencesStore";
 import { useUserStore } from "../../../store/userStore";
+import { usuariosService } from "../../../services/usuariosService";
+import { supabase } from "../../../services/supabaseClient";
+import { UserRole } from "../../../types/types";
 
 export default function EditProfile() {
   const router = useRouter();
@@ -20,7 +23,12 @@ export default function EditProfile() {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const user = useUserStore((state) => state.user);
   const updateNombre = useUserStore((state) => state.updateNombre);
+  const updateEmail = useUserStore((state) => state.updateEmail);
+  const updateRol = useUserStore((state) => state.updateRol);
+
   const [nombre, setNombre] = useState(user?.nombre ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
@@ -29,21 +37,80 @@ export default function EditProfile() {
       return;
     }
 
+    if (!user?.email) {
+      Alert.alert(
+        "Error",
+        "No se ha podido obtener la información del usuario actual",
+      );
+      return;
+    }
+
     setIsSaving(true);
     try {
       // Simular un pequeño delay para mejor UX
       await new Promise((resolve) => setTimeout(resolve, 300));
+
+      // Buscar el registro del usuario en la tabla "usuarios" por email
+      const dbUser = await usuariosService.getByEmail(user.email);
+
+      if (!dbUser) {
+        Alert.alert(
+          "Error",
+          "No se ha encontrado el usuario en la base de datos",
+        );
+        return;
+      }
+
+      const trimmedEmail = email.trim();
+
+      // Construir el payload de actualización (sin tocar rol)
+      const updatePayload: Parameters<typeof usuariosService.update>[1] = {
+        name: nombre.trim(),
+        email: trimmedEmail,
+        avatarUrl: avatarUrl.trim() || undefined,
+      };
+
+      // Actualizar la fila en la tabla usuarios
+      await usuariosService.update(dbUser.id, updatePayload);
+
+      // Si el email ha cambiado, actualizar también el email del usuario de auth
+      if (trimmedEmail && trimmedEmail !== user.email) {
+        const { error: authError } = await supabase.auth.updateUser({
+          email: trimmedEmail,
+        });
+
+        if (authError) {
+          console.warn("Error actualizando email en auth", authError);
+          Alert.alert(
+            "Aviso",
+            "Se ha actualizado el email en la tabla de usuarios, pero no en la cuenta de acceso.",
+          );
+        }
+      }
+
+      // Sincronizar el store local con datos frescos desde BD (rol incluido)
+      const refreshedDbUser = await usuariosService.getById(dbUser.id);
+
       updateNombre(nombre.trim());
-      
-      // Obtener el usuario actualizado del store
-      const updatedUser = useUserStore.getState().user;
-      
+      if (trimmedEmail) {
+        updateEmail(trimmedEmail);
+      }
+      if (refreshedDbUser?.rol) {
+        updateRol(refreshedDbUser.rol as UserRole);
+      }
+
       Alert.alert("Éxito", "Nombre actualizado correctamente", [
         {
           text: "OK",
           onPress: () => router.replace("/profile/profile"),
         },
       ]);
+    } catch (error) {
+      console.error(error);
+      Alert.alert(
+        "Error",
+        "No se ha podido actualizar el perfil. Inténtalo de nuevo.",
+      );
     } finally {
       setIsSaving(false);
     }
@@ -83,7 +150,7 @@ export default function EditProfile() {
         </View>
         <Text style={styles.userName}>{nombre || "Usuario"}</Text>
         <Text style={styles.userEmail}>
-          {user?.email ?? "usuario@example.com"}
+          {email || user?.email || "usuario@example.com"}
         </Text>
       </View>
 
@@ -100,6 +167,26 @@ export default function EditProfile() {
             value={nombre}
             onChangeText={setNombre}
             placeholder="Ingresa tu nombre"
+            style={[
+              styles.input,
+              { borderColor: colors.borderMain, color: colors.textBody },
+            ]}
+            placeholderTextColor={colors.grayPlaceholder}
+            editable={!isSaving}
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Correo electrónico</Text>
+          <Text style={styles.hint}>
+            Este es el correo que se usa para comunicarte y acceder
+          </Text>
+          <TextInput
+            value={email}
+            onChangeText={setEmail}
+            placeholder="correo@ejemplo.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
             style={[
               styles.input,
               { borderColor: colors.borderMain, color: colors.textBody },

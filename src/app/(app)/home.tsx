@@ -12,10 +12,10 @@ export default function Home() {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const user = useUserStore((state) => state.user);
 
-  const canSeeClientes = user?.rol === 'admin' || user?.rol === 'empleado';
-  const isAdmin = user?.rol === 'admin';
-  const isEmpleado = user?.rol === 'empleado';
-  const isCliente = user?.rol === 'cliente';
+  const canSeeClientes = user?.rol === 'ADMIN' || user?.rol === 'MECANICO';
+  const isAdmin = user?.rol === 'ADMIN';
+  const isEmpleado = user?.rol === 'MECANICO';
+  const isCliente = user?.rol === 'NORMAL';
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.contentContainer}>
@@ -39,8 +39,8 @@ export default function Home() {
                 />
                 <Text style={styles.rolePillText}>
                   {isAdmin && 'ADMIN'}
-                  {isEmpleado && 'STAFF'}
-                  {isCliente && 'USER'}
+                  {isEmpleado && 'MECANICO'}
+                  {isCliente && 'NORMAL'}
                 </Text>
               </View>
 
@@ -59,7 +59,7 @@ export default function Home() {
       <OptionsSelect canSeeClientes={canSeeClientes} />
 
       {/* Info según rol */}
-      <AdminPanel rol={user?.rol ?? null} />
+      <AdminPanel rol={user?.rol} />
       
     </ScrollView>
   );

@@ -5,12 +5,13 @@ import { supabase } from "./supabaseClient";
 const mapRoleNameToUserRole = (roleName?: string): UserRole => {
   switch (roleName?.toUpperCase()) {
     case "ADMIN":
-      return "admin";
+      return "ADMIN";
     case "MECANICO":
+      return "MECANICO";
     case "NORMAL":
-      return "empleado";
+      return "NORMAL";
     default:
-      return "cliente";
+      return "NORMAL";
   }
 };
 
@@ -20,7 +21,7 @@ const mapSupabaseUser = (user: User): AuthUser => {
     (metadata.nombre as string | undefined) ||
     user.email?.split("@")[0] ||
     "Usuario";
-  const rol = (metadata.rol as UserRole | undefined) ?? "cliente";
+  const rol = (metadata.rol as UserRole | undefined) ?? "NORMAL";
 
   return {
     id: user.id,
@@ -36,13 +37,13 @@ const enrichWithAppUser = async (authUser: AuthUser): Promise<AuthUser> => {
   try {
     const { data, error } = await supabase
       .from("usuarios")
-      .select("nombre, email, rol")
+		  .select("nombre, email, rol")
       .ilike("email", authUser.email)
       .maybeSingle();
 
     if (error || !data) return authUser;
 
-    const roleName = data.rol as string | undefined;
+		const roleName = data.rol as string | undefined;
 
     return {
       ...authUser,

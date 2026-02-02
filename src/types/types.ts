@@ -1,6 +1,6 @@
 // Tipos de Autenticación
 // =====================================================
-export type UserRole = "admin" | "cliente" | "empleado";
+export type UserRole = "ADMIN" | "NORMAL" | "MECANICO";
 
 export interface AuthUser {
   id: string;
@@ -15,21 +15,21 @@ export interface AuthUser {
 // 1. TIPOS BÁSICOS
 // =====================================================
 
-export type RoleName = 'NORMAL' | 'ADMIN' | 'MECANICO';
 
 export interface Role {
   id: string;
-  name: RoleName;
+  name: UserRole;
   description?: string;
 }
 
 export interface User {
   id: string;
-  rol: RoleName;
+  rol: UserRole;
   name: string;
   apellidos?: string;
   email: string;
   telefono?: string;
+  avatarUrl?: string;
   activo?: boolean;
 }
 
