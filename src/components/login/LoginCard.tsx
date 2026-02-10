@@ -93,7 +93,7 @@ export const LoginCard = () => {
 
         <Pressable style={styles.buttonG}>
             <Image
-                source={require('C:\\Users\\mauro\\Documents\\DAM-PmDm\\REACT\\myAppProject\\assets\\google.png')}
+                source={require('../../../assets/google.png')}
                 style={{ width: 18, height: 18, marginRight: 10 }}
             />
             <Text style={{fontSize: 14, fontWeight: "bold", color: colors.textTitle, alignSelf: "center"}}>Google</Text>

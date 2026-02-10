@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Tabs, Redirect } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import { View, StatusBar } from "react-native";
 import { useThemeColors } from "../../store/preferencesStore";
 import { useAuth } from "../../context/AuthContext";
@@ -63,6 +63,21 @@ export default function HomeLayout() {
         }}
       />
 
+      {/* MODELOS */}
+      <Tabs.Screen
+        name="modelos/index"
+        options={{
+          title: "Modelos",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? "bicycle" : "bicycle-outline"}
+              size={ICON_SIZE}
+              color={color}
+            />
+          ),
+        }}
+      />
+
       {/* CLIENTES - Solo visible para admin y empleado */}
       <Tabs.Screen
         name="clientes/index"
@@ -109,6 +124,7 @@ export default function HomeLayout() {
 
       {/* RUTA OCULTA */}
       <Tabs.Screen name="clientes/[id]" options={{ href: null }} />
+      <Tabs.Screen name="modelos/[id]" options={{ href: null }} />
       <Tabs.Screen name="preferences" options={{ href: null }} />
       <Tabs.Screen name="profile/edit-profile" options={{ href: null }} />
     </Tabs>

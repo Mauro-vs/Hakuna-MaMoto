@@ -14,6 +14,14 @@ export function OptionsSelect({ canSeeClientes }: OptionsSelectProps) {
 	const router = useRouter();
 
 	const actions = [
+		{
+			key: "modelos",
+			icon: "car-sport-outline" as const,
+			title: "Modelos",
+			desc: "Explora modelos disponibles",
+			onPress: () => router.push("/modelos"),
+			iconBg: "#0EA5E9",
+		},
 		...(canSeeClientes
 			? [
 					{

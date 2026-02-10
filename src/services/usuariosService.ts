@@ -71,20 +71,25 @@ export const usuariosService = {
     const payload: Record<string, unknown> = {};
     if (input.name) payload.nombre = input.name;
     if (input.email) payload.email = input.email;
-    if (input.avatarUrl !== undefined) payload.avatar_url = input.avatarUrl ?? null;
+    if (input.avatarUrl !== undefined)
+      payload.avatar_url = input.avatarUrl ?? null;
     if (input.activo !== undefined) payload.activo = input.activo;
+
+    if (input.email) {
+      const { data, error: errorAuth } = await supabase.auth.updateUser({
+        email: payload.email as string,
+      });
+
+      if (errorAuth) throw errorAuth;
+    }
 
     const { error } = await supabase
       .from("usuarios")
       .update(payload)
       .eq("id", id);
-    
-    const { data, error: errorAuth } = await supabase.auth.updateUser({
-    email: payload.email as string,
-})
 
+    if (error) throw error;
 
-    if (error || errorAuth) throw error;
     return true;
   },
 

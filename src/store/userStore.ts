@@ -13,14 +13,17 @@ interface UserStore {
 export const useUserStore = create<UserStore>((set) => ({
   user: null,
   setUser: (user) => set({ user }),
-  updateNombre: (nombre) => set((state) => ({
-    user: state.user ? { ...state.user, nombre } : null,
-  })),
-  updateEmail: (email) => set((state) => ({
-    user: state.user ? { ...state.user, email } : null,
-  })),
-  updateRol: (rol) => set((state) => ({
-    user: state.user ? { ...state.user, rol } : null,
-  })),
+  updateNombre: (nombre) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, nombre } : null,
+    })),
+  updateEmail: (email) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, email } : null,
+    })),
+  updateRol: (rol) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, rol } : null,
+    })),
   clearUser: () => set({ user: null }),
 }));
