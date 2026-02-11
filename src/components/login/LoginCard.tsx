@@ -10,10 +10,13 @@ import { useUserStore } from "../../store/userStore";
 export const LoginCard = () => {
         const colors = useThemeColors();
         const styles = createStyles(colors);
-        const { login } = useAuth();
+    const { login, register } = useAuth();
         const setUser = useUserStore((state) => state.setUser);
-        const [email, setEmail] = useState("admin@admin.com");
-        const [password, setPassword] = useState("admin1234");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [nombre, setNombre] = useState("");
+    const [isRegistering, setIsRegistering] = useState(false);
         const [loading, setLoading] = useState(false);
 
         const handleLogin = async () => {
@@ -33,17 +36,77 @@ export const LoginCard = () => {
             }
         };
 
+        const handleRegister = async () => {
+            if (!nombre.trim()) {
+                Alert.alert("Error", "Completa tu nombre");
+                return;
+            }
+            if (!email || !password || !confirmPassword) {
+                Alert.alert("Error", "Completa todos los campos");
+                return;
+            }
+            if (password !== confirmPassword) {
+                Alert.alert("Error", "Las contraseñas no coinciden");
+                return;
+            }
+            try {
+                setLoading(true);
+                const result = await register(email, password, nombre.trim());
+                if (result.needsEmailConfirmation) {
+                    Alert.alert(
+                        "Revisa tu correo",
+                        "Te hemos enviado un email para confirmar tu cuenta.",
+                    );
+                    setIsRegistering(false);
+                    setPassword("");
+                    setConfirmPassword("");
+                    return;
+                }
+                setUser(result.user);
+            } catch (err) {
+                console.log(err);
+                Alert.alert("Error de registro", err instanceof Error ? err.message : "Error");
+            } finally {
+                setLoading(false);
+            }
+        };
+
   return (
     <View style={{flex: 1, width: '80%', maxWidth: 400}}>
         <View style={{height: 100}} />
 
         {/* Inicio de la pantalla */}
         <LoginIcon />
-        <Text style={styles.titulo}>Bienvenido</Text>
-        <Text style={styles.subtitulo}>Introduce tus credenciales para continuar</Text>
+                <Text style={styles.titulo}>{isRegistering ? "Crea tu cuenta" : "Bienvenido"}</Text>
+                <Text style={styles.subtitulo}>
+                        {isRegistering
+                            ? "Completa tus datos para registrarte"
+                            : "Introduce tus credenciales para continuar"}
+                </Text>
 
         {/* Campos de entrada */}
-        <Text style={styles.inputText}>Correo Electrónico</Text>
+        {isRegistering && (
+            <>
+                <Text style={styles.inputText}>Nombre</Text>
+                <TextInput
+                    mode="flat"
+                    placeholder="Tu nombre"
+                    placeholderTextColor={colors.inputPlaceholder}
+                    textColor={colors.textBody}
+                    underlineColor={colors.borderMain}
+                    activeUnderlineColor={colors.borderLight}
+                    selectionColor={colors.primaryButton}
+                    style={styles.paperInput}
+                    value={nombre}
+                    onChangeText={setNombre}
+                    editable={!loading}
+                    left={<TextInput.Icon icon="account-outline" color={colors.inputPlaceholder} size={20} />}
+                />
+                <View style={{height: 10}} />
+            </>
+        )}
+
+        <Text style={styles.inputText}>Correo Electronico</Text>
         <TextInput
             mode="flat"
             placeholder="nombre@ejemplo.com"
@@ -60,8 +123,10 @@ export const LoginCard = () => {
         />
 
         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 15}}>
-            <Text style={styles.inputText}>Contraseña</Text>
-            <Text style={styles.inputTextPassword} onPress={() => {}}>¿Olvidaste tu contraseña?</Text>
+            <Text style={styles.inputText}>Contrasena</Text>
+            {!isRegistering && (
+                <Text style={styles.inputTextPassword} onPress={() => {}}>¿Olvidaste tu contraseña?</Text>
+            )}
         </View>
         <TextInput
             mode="flat"
@@ -79,8 +144,35 @@ export const LoginCard = () => {
             left={<TextInput.Icon icon="lock-outline" color={colors.inputPlaceholder} size={20} />}
         />
 
+        {isRegistering && (
+            <>
+                <View style={{height: 10}} />
+                <Text style={styles.inputText}>Confirmar contrasena</Text>
+                <TextInput
+                    mode="flat"
+                    placeholder="********"
+                    secureTextEntry={true}
+                    placeholderTextColor={colors.inputPlaceholder}
+                    textColor={colors.textBody}
+                    underlineColor={colors.borderMain}
+                    activeUnderlineColor={colors.borderLight}
+                    selectionColor={colors.primaryButton}
+                    style={styles.paperInput}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    editable={!loading}
+                    left={<TextInput.Icon icon="lock-outline" color={colors.inputPlaceholder} size={20} />}
+                />
+            </>
+        )}
+
         {/* Botón de inicio de sesión */}
-        <ButtonGeneral onPress={handleLogin} isLoading={loading} />
+        <ButtonGeneral
+            onPress={isRegistering ? handleRegister : handleLogin}
+            isLoading={loading}
+            label={isRegistering ? "Crear cuenta" : "Iniciar sesion"}
+            loadingLabel={isRegistering ? "Registrando..." : "Iniciando..."}
+        />
 
         {/* Separador */}
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20}}>
@@ -100,8 +192,15 @@ export const LoginCard = () => {
         </Pressable>
 
         <View style={{flexDirection: "row", alignSelf: "center", marginTop: 15}}>
-            <Text style={[styles.inputText, {fontWeight: "600"}]}>¿No tienes una cuenta? </Text>
-            <Text style={styles.inputTextPassword} onPress={() => {}}>Regístrate ahora</Text>
+            <Text style={[styles.inputText, {fontWeight: "600"}]}>
+                {isRegistering ? "¿Ya tienes una cuenta? " : "¿No tienes una cuenta? "}
+            </Text>
+            <Text
+                style={styles.inputTextPassword}
+                onPress={() => setIsRegistering((prev) => !prev)}
+            >
+                {isRegistering ? "Inicia sesion" : "Registrate ahora"}
+            </Text>
         </View>
     </View>
   );

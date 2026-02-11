@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../../store/preferencesStore';
 import { useUserStore } from '../../store/userStore';
@@ -23,7 +23,11 @@ export default function Home() {
       <View style={styles.headerCard}>
         <View style={styles.headerMain}>
           <View style={styles.avatarSmall}>
-            <Text style={styles.avatarSmallText}>{(user?.nombre?.[0] ?? 'U').toUpperCase()}</Text>
+            {user?.avatarUrl ? (
+              <Image source={{ uri: user.avatarUrl }} style={styles.avatarSmallImage} />
+            ) : (
+              <Text style={styles.avatarSmallText}>{(user?.nombre?.[0] ?? 'U').toUpperCase()}</Text>
+            )}
           </View>
           
           <View style={styles.headerInfo}>
@@ -40,7 +44,7 @@ export default function Home() {
                 <Text style={styles.rolePillText}>
                   {isAdmin && 'ADMIN'}
                   {isEmpleado && 'MECANICO'}
-                  {isCliente && 'NORMAL'}
+                  {isCliente && 'CLIENTE'}
                 </Text>
               </View>
 
@@ -113,6 +117,11 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       fontSize: 32,
       fontWeight: '900',
       color: '#ffffff',
+    },
+    avatarSmallImage: {
+      width: 76,
+      height: 76,
+      borderRadius: 38,
     },
     headerInfo: {
       flex: 1,

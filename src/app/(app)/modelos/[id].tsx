@@ -83,7 +83,6 @@ export default function ModeloDetalle() {
           onPress={() =>
             Alert.alert(
               "Reserva",
-              "Dime a que pantalla de reserva quieres navegar y lo conecto.",
             )
           }
         >

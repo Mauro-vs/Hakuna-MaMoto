@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -8,9 +8,13 @@ import {
   TextInput,
   Alert,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system/legacy";
+import { decode } from "base64-arraybuffer";
 import { useThemeColors } from "../../../store/preferencesStore";
 import { useUserStore } from "../../../store/userStore";
 import { usuariosService } from "../../../services/usuariosService";
@@ -25,11 +29,116 @@ export default function EditProfile() {
   const updateNombre = useUserStore((state) => state.updateNombre);
   const updateEmail = useUserStore((state) => state.updateEmail);
   const updateRol = useUserStore((state) => state.updateRol);
+  const updateAvatarUrl = useUserStore((state) => state.updateAvatarUrl);
 
   const [nombre, setNombre] = useState(user?.nombre ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadAvatar = async () => {
+      if (!user?.email) return;
+      try {
+        const dbUser = await usuariosService.getByEmail(user.email);
+        if (mounted && dbUser?.avatarUrl) {
+          setAvatarUrl(dbUser.avatarUrl);
+          updateAvatarUrl(dbUser.avatarUrl);
+        }
+      } catch (error) {
+        console.warn("No se ha podido cargar el avatar", error);
+      }
+    };
+
+    void loadAvatar();
+
+    return () => {
+      mounted = false;
+    };
+  }, [user?.email]);
+
+  const uploadAvatar = async (uri: string, userId: string): Promise<string> => {
+    const fileExt = (uri.split(".").pop() || "jpg").toLowerCase();
+    const fileName = `${userId}/${Date.now()}.${fileExt}`;
+
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: "base64",
+    });
+    const fileBuffer = decode(base64);
+
+    const contentTypeMap: Record<string, string> = {
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+      webp: "image/webp",
+      heic: "image/heic",
+      heif: "image/heif",
+    };
+    const contentType = contentTypeMap[fileExt] || "image/jpeg";
+
+    const { error } = await supabase.storage
+      .from("avatars")
+      .upload(fileName, fileBuffer, {
+        contentType,
+        upsert: true,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
+    return data.publicUrl;
+  };
+
+  const handlePickAvatar = async () => {
+    if (!user?.id) {
+      Alert.alert("Error", "No se ha podido obtener el usuario actual");
+      return;
+    }
+
+    try {
+      setIsUploadingAvatar(true);
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permiso requerido", "Necesitamos acceso a tus fotos");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (result.canceled || !result.assets?.[0]?.uri) {
+        return;
+      }
+
+      const newUrl = await uploadAvatar(result.assets[0].uri, user.id);
+      setAvatarUrl(newUrl);
+      updateAvatarUrl(newUrl);
+
+      try {
+        await usuariosService.update(user.id, { avatarUrl: newUrl });
+      } catch (updateError) {
+        console.warn("No se ha podido guardar el avatar", updateError);
+        Alert.alert(
+          "Aviso",
+          "El avatar se subio, pero no se pudo guardar en tu perfil.",
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "No se ha podido subir el avatar");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!nombre.trim()) {
@@ -98,8 +207,13 @@ export default function EditProfile() {
       if (refreshedDbUser?.rol) {
         updateRol(refreshedDbUser.rol as UserRole);
       }
+      if (refreshedDbUser?.avatarUrl) {
+        updateAvatarUrl(refreshedDbUser.avatarUrl);
+      } else if (avatarUrl.trim()) {
+        updateAvatarUrl(avatarUrl.trim());
+      }
 
-      Alert.alert("Éxito", "Nombre actualizado correctamente", [
+      Alert.alert("Éxito", "Usuario actualizado correctamente", [
         {
           text: "OK",
           onPress: () => router.replace("/profile/profile"),
@@ -143,11 +257,29 @@ export default function EditProfile() {
 
       {/* Info actual */}
       <View style={styles.userInfoCard}>
-        <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>
-            {(nombre?.[0] ?? "U").toUpperCase()}
-          </Text>
-        </View>
+        <Pressable
+          style={({ pressed }) => [
+            styles.avatarContainer,
+            pressed && styles.avatarContainerPressed,
+            (isUploadingAvatar || isSaving) && styles.avatarContainerDisabled,
+          ]}
+          onPress={handlePickAvatar}
+          disabled={isUploadingAvatar || isSaving}
+        >
+          {avatarUrl ? (
+            <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
+          ) : (
+            <Text style={styles.avatarText}>
+              {(nombre?.[0] ?? "U").toUpperCase()}
+            </Text>
+          )}
+          <View style={styles.avatarBadge}>
+            <Feather name="camera" size={14} color="#fff" />
+          </View>
+        </Pressable>
+        <Text style={styles.avatarHint}>
+          {isUploadingAvatar ? "Subiendo..." : "Toca para cambiar tu avatar"}
+        </Text>
         <Text style={styles.userName}>{nombre || "Usuario"}</Text>
         <Text style={styles.userEmail}>
           {email || user?.email || "usuario@example.com"}
@@ -259,18 +391,51 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       elevation: 2,
     },
     avatarContainer: {
-      width: 70,
-      height: 70,
-      borderRadius: 35,
+      width: 84,
+      height: 84,
+      borderRadius: 42,
       backgroundColor: colors.primaryButton,
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 14,
+      marginBottom: 10,
+      borderWidth: 2,
+      borderColor: colors.borderMain,
+    },
+    avatarContainerPressed: {
+      transform: [{ scale: 0.98 }],
+      opacity: 0.9,
+    },
+    avatarContainerDisabled: {
+      opacity: 0.6,
     },
     avatarText: {
       fontSize: 28,
       fontWeight: "800",
       color: "#fff",
+    },
+    avatarImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+    },
+    avatarBadge: {
+      position: "absolute",
+      right: -2,
+      bottom: -2,
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      backgroundColor: colors.primaryButton,
+      borderWidth: 2,
+      borderColor: colors.backgroundCard,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    avatarHint: {
+      fontSize: 12,
+      color: colors.grayPlaceholder,
+      fontWeight: "600",
+      marginBottom: 8,
     },
     userName: {
       fontSize: 18,

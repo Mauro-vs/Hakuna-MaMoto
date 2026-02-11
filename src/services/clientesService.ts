@@ -7,6 +7,7 @@ export const clientesService = {
     const { data, error } = await supabase
       .from("clientes")
       .select("id, nombre, apellidos, email, telefono")
+      .eq("activo", true)
       .order("id", { ascending: true });
 
     if (error) throw error;
@@ -26,6 +27,7 @@ export const clientesService = {
       .from("clientes")
       .select("id, nombre, apellidos, email, telefono")
       .eq("id", id)
+      .eq("activo", true)
       .maybeSingle();
 
     if (error) throw error;
@@ -69,7 +71,7 @@ export const clientesService = {
   /** Actualiza solo los campos indicados */
   async updateCliente(
     id: number,
-    data: Partial<Omit<Cliente, "id">>
+    data: Partial<Omit<Cliente, "id">>,
   ): Promise<boolean> {
     const payload: Record<string, unknown> = {};
     if (data.name !== undefined) payload.nombre = data.name;
@@ -88,12 +90,19 @@ export const clientesService = {
 
   /** Elimina un cliente por id */
   async deleteCliente(id: number): Promise<boolean> {
-    const { error } = await supabase
+    const { error: reservasError } = await supabase
+      .from("reservas")
+      .update({ estado: "CANCELADA" })
+      .eq("cliente_id", id);
+
+    if (reservasError) throw reservasError;
+
+    const { error: clienteError } = await supabase
       .from("clientes")
-      .delete()
+      .update({ activo: false })
       .eq("id", id);
 
-    if (error) throw error;
+    if (clienteError) throw clienteError;
     return true;
   },
 
@@ -104,6 +113,7 @@ export const clientesService = {
       .from("clientes")
       .select("id, nombre, apellidos, email, telefono")
       .or(`nombre.ilike.${q},apellidos.ilike.${q},email.ilike.${q}`)
+      .eq("activo", true)
       .order("id", { ascending: true });
 
     if (error) throw error;
@@ -123,6 +133,7 @@ export const clientesService = {
       .from("clientes")
       .select("id")
       .eq("id", id)
+      .eq("activo", true)
       .maybeSingle();
 
     if (error) throw error;

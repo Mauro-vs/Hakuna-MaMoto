@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Tabs, Redirect } from "expo-router";
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
-import { View, StatusBar } from "react-native";
+import { Image, StatusBar, View } from "react-native";
 import { useThemeColors } from "../../store/preferencesStore";
 import { useAuth } from "../../context/AuthContext";
 import { useUserStore } from "../../store/userStore";
@@ -12,6 +12,7 @@ export default function HomeLayout() {
   const { isSignedIn, isLoading } = useAuth();
   const user = useUserStore((state) => state.user);
   const isCliente = user?.rol === 'NORMAL';
+  const avatarUrl = user?.avatarUrl?.trim();
 
   const screenOptions = useMemo(() => ({
     headerStyle: { backgroundColor: colors.primaryHeader },
@@ -105,18 +106,29 @@ export default function HomeLayout() {
                 width: 36,
                 height: 36,
                 borderRadius: 18,
-                backgroundColor: focused ? colors.tabActive : 'transparent',
-                borderWidth: focused ? 0 : 2,
-                borderColor: colors.tabInactive,
+                backgroundColor: "transparent",
+                borderWidth: 2,
+                borderColor: focused ? colors.tabActive : colors.tabInactive,
                 justifyContent: "center",
                 alignItems: "center",
               }}
             >
-              <Ionicons
-                name="person"
-                size={20}
-                color={focused ? colors.textInput : colors.tabInactive}
-              />
+              {avatarUrl ? (
+                <Image
+                  source={{ uri: avatarUrl }}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                  }}
+                />
+              ) : (
+                <Ionicons
+                  name="person"
+                  size={20}
+                  color={focused ? colors.tabActive : colors.tabInactive}
+                />
+              )}
             </View>
           ),
         }}

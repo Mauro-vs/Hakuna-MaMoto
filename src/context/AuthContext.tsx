@@ -3,6 +3,7 @@ import { useUserStore } from "../store/userStore";
 import {
   loginService,
   logoutService,
+  registerService,
   onAuthStateChange,
 } from "../services/authService";
 import { supabase } from "../services/supabaseClient";
@@ -14,6 +15,7 @@ interface AuthContextValue {
   isLoading: boolean;
   isSignedIn: boolean;
   login: (email: string, password: string) => Promise<AuthUser>;
+  register: (email: string, password: string, nombre: string) => Promise<{ user: AuthUser; needsEmailConfirmation: boolean }>;
   logout: () => Promise<void>;
 }
 
@@ -73,6 +75,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const register = async (email: string, password: string, nombre: string) => {
+    setIsLoading(true);
+    try {
+      const result = await registerService(email, password, nombre);
+      if (!result.needsEmailConfirmation) {
+        setUser(result.user);
+        await AsyncStorage.setItem("auth_user", JSON.stringify(result.user));
+      }
+      return result;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     setIsLoading(true);
     try {
@@ -88,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     isSignedIn: !!user,
     login,
+    register,
     logout,
   }), [user, isLoading]);
 

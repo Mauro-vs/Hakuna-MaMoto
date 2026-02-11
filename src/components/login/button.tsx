@@ -5,16 +5,23 @@ import { useThemeColors } from "../../store/preferencesStore";
 interface ButtonGeneralProps {
   onPress?: () => void;
   isLoading?: boolean;
+  label?: string;
+  loadingLabel?: string;
 }
 
-const ButtonGeneral = ({ onPress, isLoading = false }: ButtonGeneralProps) => {
+const ButtonGeneral = ({
+  onPress,
+  isLoading = false,
+  label = "Iniciar Sesion",
+  loadingLabel = "Cargando...",
+}: ButtonGeneralProps) => {
   const colors = useThemeColors();
   const s = createStyles(colors);
 
   return (
     <View>
         <Pressable style={[s.button, isLoading && s.buttonDisabled]} onPress={onPress} disabled={isLoading}>
-          <Text style={s.buttonText}>{isLoading ? 'Iniciando...' : 'Iniciar Sesión'}</Text>
+          <Text style={s.buttonText}>{isLoading ? loadingLabel : label}</Text>
         </Pressable>
     </View>
   );

@@ -7,6 +7,7 @@ interface UserStore {
   updateNombre: (nombre: string) => void;
   updateEmail: (email: string) => void;
   updateRol: (rol: AuthUser["rol"]) => void;
+  updateAvatarUrl: (avatarUrl?: string) => void;
   clearUser: () => void;
 }
 
@@ -24,6 +25,10 @@ export const useUserStore = create<UserStore>((set) => ({
   updateRol: (rol) =>
     set((state) => ({
       user: state.user ? { ...state.user, rol } : null,
+    })),
+  updateAvatarUrl: (avatarUrl) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, avatarUrl } : null,
     })),
   clearUser: () => set({ user: null }),
 }));

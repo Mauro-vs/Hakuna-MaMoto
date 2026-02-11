@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View, Text, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Pressable, ScrollView, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../../../store/preferencesStore';
@@ -27,7 +27,11 @@ export default function Profile() {
       <View style={styles.profileCard}>
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
-            <Text style={styles.avatarText}>{(user?.nombre?.[0] ?? 'U').toUpperCase()}</Text>
+            {user?.avatarUrl ? (
+              <Image source={{ uri: user.avatarUrl }} style={styles.avatarImage} />
+            ) : (
+              <Text style={styles.avatarText}>{(user?.nombre?.[0] ?? 'U').toUpperCase()}</Text>
+            )}
           </View>
           
           <View style={styles.headerContent}>
@@ -137,6 +141,11 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       fontSize: 32,
       fontWeight: '900',
       color: '#ffffff',
+    },
+    avatarImage: {
+      width: 76,
+      height: 76,
+      borderRadius: 38,
     },
     headerContent: {
       flex: 1,
