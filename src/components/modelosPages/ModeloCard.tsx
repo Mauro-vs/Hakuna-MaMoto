@@ -5,9 +5,14 @@ import { router } from "expo-router";
 import type { Modelo } from "../../data/Modelos";
 import { useThemeColors } from "../../store/preferencesStore";
 
-type ItemProps = { item: Modelo };
+type ItemProps = {
+  item: Modelo;
+  isAdmin?: boolean;
+  onEdit?: (item: Modelo) => void;
+  onDelete?: (item: Modelo) => void;
+};
 
-export const ModeloCard: React.FC<ItemProps> = ({ item }) => {
+export const ModeloCard: React.FC<ItemProps> = ({ item, isAdmin, onEdit, onDelete }) => {
   const colors = useThemeColors();
   const s = createStyles(colors);
   const priceLabel = `${item.precioDia.toFixed(2)} €/dia`;
@@ -20,6 +25,28 @@ export const ModeloCard: React.FC<ItemProps> = ({ item }) => {
       }
     >
       <View style={s.mediaWrap}>
+        {isAdmin ? (
+          <View style={s.adminActions}>
+            <Pressable
+              style={s.adminButton}
+              onPress={(event) => {
+                event.stopPropagation?.();
+                onEdit?.(item);
+              }}
+            >
+              <Ionicons name="create-outline" size={16} color={colors.textTitle} />
+            </Pressable>
+            <Pressable
+              style={[s.adminButton, s.adminButtonDanger]}
+              onPress={(event) => {
+                event.stopPropagation?.();
+                onDelete?.(item);
+              }}
+            >
+              <Ionicons name="trash-outline" size={16} color={colors.errorText} />
+            </Pressable>
+          </View>
+        ) : null}
         {item.imagenUrl ? (
           <Image source={{ uri: item.imagenUrl }} style={s.image} />
         ) : (
@@ -120,5 +147,26 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       fontSize: 12,
       color: colors.grayLabelText,
       fontWeight: "600",
+    },
+    adminActions: {
+      position: "absolute",
+      top: 8,
+      right: 8,
+      flexDirection: "row",
+      gap: 8,
+      zIndex: 2,
+    },
+    adminButton: {
+      width: 30,
+      height: 30,
+      borderRadius: 8,
+      backgroundColor: colors.backgroundCard,
+      borderWidth: 1,
+      borderColor: colors.borderMain,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    adminButtonDanger: {
+      borderColor: colors.errorBorder,
     },
   });

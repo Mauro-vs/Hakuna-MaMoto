@@ -1,21 +1,53 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useThemeColors } from '../../store/preferencesStore';
 import { useUserStore } from '../../store/userStore';
 import { OptionsSelect } from '../../components/home/optionsSelect';
 import { AdminPanel } from '../../components/home/adminPanel';
+import { supabase } from '../../services/supabaseClient';
 
 
 export default function Home() {
   const colors = useThemeColors();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const user = useUserStore((state) => state.user);
+  const [pedidosCount, setPedidosCount] = useState<number | null>(null);
 
-  const canSeeClientes = user?.rol === 'ADMIN' || user?.rol === 'MECANICO';
   const isAdmin = user?.rol === 'ADMIN';
   const isEmpleado = user?.rol === 'MECANICO';
   const isCliente = user?.rol === 'NORMAL';
+
+  const loadPedidosCount = useCallback(async () => {
+    if (!user?.id) {
+      setPedidosCount(null);
+      return;
+    }
+
+    const { count, error } = await supabase
+      .from('reservas')
+      .select('id', { count: 'exact', head: true })
+      .eq('usuario_id', user.id);
+
+    if (error) {
+      console.warn('No se pudo cargar el numero de pedidos', error);
+      setPedidosCount(0);
+      return;
+    }
+
+    setPedidosCount(count ?? 0);
+  }, [user?.id]);
+
+  useEffect(() => {
+    void loadPedidosCount();
+  }, [loadPedidosCount]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadPedidosCount();
+    }, [loadPedidosCount])
+  );
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.contentContainer}>
@@ -48,10 +80,10 @@ export default function Home() {
                 </Text>
               </View>
 
-              {canSeeClientes && (
+              {pedidosCount !== null && (
                 <View style={styles.pedidosBadge}>
                   <Ionicons name="document-text" size={12} color={colors.primaryButton} />
-                  <Text style={styles.pedidosText}>0 pedidos</Text>
+                  <Text style={styles.pedidosText}>{pedidosCount} reservas</Text>
                 </View>
               )}
             </View>
@@ -60,7 +92,7 @@ export default function Home() {
       </View>
 
       {/* Acciones principales */}
-      <OptionsSelect canSeeClientes={canSeeClientes} />
+      <OptionsSelect />
 
       {/* Info según rol */}
       <AdminPanel rol={user?.rol} />

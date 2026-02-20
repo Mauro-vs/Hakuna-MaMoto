@@ -9,6 +9,7 @@ import {
   Alert,
   TouchableOpacity,
   Image,
+  Platform,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -64,10 +65,17 @@ export default function EditProfile() {
     const fileExt = (uri.split(".").pop() || "jpg").toLowerCase();
     const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
-    const base64 = await FileSystem.readAsStringAsync(uri, {
-      encoding: "base64",
-    });
-    const fileBuffer = decode(base64);
+    let fileBuffer: ArrayBuffer;
+
+    if (Platform.OS === "web") {
+      const response = await fetch(uri);
+      fileBuffer = await response.arrayBuffer();
+    } else {
+      const base64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: "base64",
+      });
+      fileBuffer = decode(base64);
+    }
 
     const contentTypeMap: Record<string, string> = {
       jpg: "image/jpeg",
@@ -87,6 +95,7 @@ export default function EditProfile() {
       });
 
     if (error) {
+      console.log(error);
       throw error;
     }
 
@@ -116,6 +125,7 @@ export default function EditProfile() {
       });
 
       if (result.canceled || !result.assets?.[0]?.uri) {
+        console.log("Selección de imagen cancelada o sin URI");
         return;
       }
 

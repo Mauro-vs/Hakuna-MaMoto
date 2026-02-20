@@ -1,54 +1,48 @@
 import React, { useMemo } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useThemeColors } from "../../store/preferencesStore";
+import { useAuth } from "../../context/AuthContext";
 
-interface OptionsSelectProps {
-	canSeeClientes: boolean;
-}
-
-export function OptionsSelect({ canSeeClientes }: OptionsSelectProps) {
+export function OptionsSelect() {
 	const colors = useThemeColors();
 	const styles = useMemo(() => createStyles(colors), [colors]);
 	const router = useRouter();
+	const { logout } = useAuth();
 
 	const actions = [
 		{
-			key: "modelos",
-			icon: "car-sport-outline" as const,
-			title: "Modelos",
-			desc: "Explora modelos disponibles",
-			onPress: () => router.push("/modelos"),
-			iconBg: "#0EA5E9",
-		},
-		...(canSeeClientes
-			? [
-					{
-						key: "clientes",
-						icon: "people" as const,
-						title: "Clientes",
-						desc: "Gestiona clientes y sus pedidos",
-						onPress: () => router.push("/clientes"),
-						iconBg: "#10B981",
-					},
-				]
-			: []),
-		{
-			key: "profile",
-			icon: "person-outline" as const,
-			title: "Mi Perfil",
-			desc: "Ver y editar información personal",
-			onPress: () => router.push("/profile/profile"),
+			key: "edit-profile",
+			icon: "create-outline" as const,
+			title: "Editar perfil",
+			desc: "Actualiza tus datos y avatar",
+			onPress: () => router.push("/profile/edit-profile"),
 			iconBg: colors.primaryButton,
 		},
 		{
 			key: "preferences",
-			icon: "settings-outline" as const,
+			icon: "options-outline" as const,
 			title: "Preferencias",
 			desc: "Tema, idioma y configuración",
 			onPress: () => router.push("/preferences"),
 			iconBg: "#8B5CF6",
+		},
+		{
+			key: "logout",
+			icon: "log-out-outline" as const,
+			title: "Cerrar sesión",
+			desc: "Salir de la cuenta actual",
+			onPress: async () => {
+				try {
+					await logout();
+					router.replace("/(login)/Login");
+				} catch (error) {
+					console.error(error);
+					Alert.alert("Error", "No se pudo cerrar sesión");
+				}
+			},
+			iconBg: "#EF4444",
 		},
 	];
 

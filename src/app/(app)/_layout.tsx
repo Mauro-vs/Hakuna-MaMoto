@@ -15,7 +15,7 @@ export default function HomeLayout() {
   const avatarUrl = user?.avatarUrl?.trim();
 
   const screenOptions = useMemo(() => ({
-    headerStyle: { backgroundColor: colors.primaryHeader },
+    headerStyle: { backgroundColor: colors.primaryHeader, height: 90 },
     headerTintColor: colors.headerText,
     headerTitleAlign: "center" as const,
     headerShadowVisible: false,
@@ -79,6 +79,21 @@ export default function HomeLayout() {
         }}
       />
 
+      {/* RESERVAS */}
+      <Tabs.Screen
+        name="reservas/index"
+        options={{
+          title: "Reservas",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? "calendar" : "calendar-outline"}
+              size={ICON_SIZE}
+              color={color}
+            />
+          ),
+        }}
+      />
+
       {/* CLIENTES - Solo visible para admin y empleado */}
       <Tabs.Screen
         name="clientes/index"
@@ -119,7 +134,7 @@ export default function HomeLayout() {
                   style={{
                     width: 32,
                     height: 32,
-                    borderRadius: 16,
+                    borderRadius: 20,
                   }}
                 />
               ) : (
