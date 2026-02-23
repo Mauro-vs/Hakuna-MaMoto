@@ -27,6 +27,8 @@ import { useUserStore } from "../../../store/userStore";
 import { modelosService } from "../../../services/modelosService";
 import { supabase } from "../../../services/supabaseClient";
 import type { Modelo } from "../../../data/Modelos";
+import { useFavoritesStore } from "../../../store/favoritesStore";
+import { useEffect } from "react";
 
 export default function ModelosScreen() {
   const colors = useThemeColors();
@@ -51,7 +53,9 @@ export default function ModelosScreen() {
     const trimmed = value.trim();
     if (!trimmed) return "";
     if (/^https?:\/\//i.test(trimmed)) return trimmed;
-    const { data: imageData } = supabase.storage.from("motos").getPublicUrl(trimmed);
+    const { data: imageData } = supabase.storage
+      .from("motos")
+      .getPublicUrl(trimmed);
     return imageData.publicUrl;
   };
 
@@ -63,6 +67,12 @@ export default function ModelosScreen() {
       precioDia: "",
       imagenUrl: "",
     });
+
+  const loadFavorites = useFavoritesStore((state) => state.loadFavorites);
+
+  useEffect(() => {
+    loadFavorites();
+  }, []);
 
   const openCreate = () => {
     setEditingModelo(null);
@@ -162,7 +172,8 @@ export default function ModelosScreen() {
   const handlePickImage = async () => {
     try {
       setIsUploadingImage(true);
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permiso requerido", "Necesitamos acceso a tus fotos");
         return;
@@ -242,7 +253,9 @@ export default function ModelosScreen() {
               onDelete={handleDelete}
             />
           )}
-          contentContainerStyle={list.length === 0 ? s.listEmpty : s.listContent}
+          contentContainerStyle={
+            list.length === 0 ? s.listEmpty : s.listContent
+          }
           ListEmptyComponent={
             <View style={s.emptyState}>
               <Text style={s.emptyTitle}>No hay modelos disponibles</Text>
@@ -267,7 +280,10 @@ export default function ModelosScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={s.modalWrapper}
         >
-          <Pressable style={s.modalBackdrop} onPress={() => setModalVisible(false)} />
+          <Pressable
+            style={s.modalBackdrop}
+            onPress={() => setModalVisible(false)}
+          />
           <View style={s.modalCard}>
             <Text style={s.modalTitle}>
               {editingModelo ? "Editar modelo" : "Nuevo modelo"}
@@ -277,7 +293,9 @@ export default function ModelosScreen() {
               <TextInput
                 style={s.input}
                 value={form.marcaModelo}
-                onChangeText={(value) => setForm((prev) => ({ ...prev, marcaModelo: value }))}
+                onChangeText={(value) =>
+                  setForm((prev) => ({ ...prev, marcaModelo: value }))
+                }
                 placeholder="Yamaha MT-07"
                 placeholderTextColor={colors.grayPlaceholder}
               />
@@ -286,7 +304,9 @@ export default function ModelosScreen() {
               <TextInput
                 style={[s.input, s.inputMultiline]}
                 value={form.descripcion}
-                onChangeText={(value) => setForm((prev) => ({ ...prev, descripcion: value }))}
+                onChangeText={(value) =>
+                  setForm((prev) => ({ ...prev, descripcion: value }))
+                }
                 placeholder="Descripcion del modelo"
                 placeholderTextColor={colors.grayPlaceholder}
                 multiline
@@ -296,7 +316,9 @@ export default function ModelosScreen() {
               <TextInput
                 style={s.input}
                 value={form.cilindrada}
-                onChangeText={(value) => setForm((prev) => ({ ...prev, cilindrada: value }))}
+                onChangeText={(value) =>
+                  setForm((prev) => ({ ...prev, cilindrada: value }))
+                }
                 placeholder="689 cc"
                 placeholderTextColor={colors.grayPlaceholder}
               />
@@ -305,7 +327,9 @@ export default function ModelosScreen() {
               <TextInput
                 style={s.input}
                 value={form.precioDia}
-                onChangeText={(value) => setForm((prev) => ({ ...prev, precioDia: value }))}
+                onChangeText={(value) =>
+                  setForm((prev) => ({ ...prev, precioDia: value }))
+                }
                 placeholder="35"
                 placeholderTextColor={colors.grayPlaceholder}
                 keyboardType="decimal-pad"
@@ -322,7 +346,10 @@ export default function ModelosScreen() {
               ) : null}
               <View style={s.imageActionsRow}>
                 <TouchableOpacity
-                  style={[s.imageButton, isUploadingImage && s.imageButtonDisabled]}
+                  style={[
+                    s.imageButton,
+                    isUploadingImage && s.imageButtonDisabled,
+                  ]}
                   onPress={handlePickImage}
                   disabled={isUploadingImage}
                 >
@@ -333,7 +360,9 @@ export default function ModelosScreen() {
                 {form.imagenUrl ? (
                   <TouchableOpacity
                     style={s.imageClearButton}
-                    onPress={() => setForm((prev) => ({ ...prev, imagenUrl: "" }))}
+                    onPress={() =>
+                      setForm((prev) => ({ ...prev, imagenUrl: "" }))
+                    }
                   >
                     <Text style={s.imageClearText}>Quitar</Text>
                   </TouchableOpacity>
@@ -354,7 +383,9 @@ export default function ModelosScreen() {
                 onPress={handleSave}
                 disabled={isSaving}
               >
-                <Text style={s.saveText}>{isSaving ? "Guardando..." : "Guardar"}</Text>
+                <Text style={s.saveText}>
+                  {isSaving ? "Guardando..." : "Guardar"}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -32,13 +32,36 @@ export const clientesService = {
 
     if (error) throw error;
     if (!data) return null;
+
+    // Cargar reservas asociadas a este cliente para mostrar en "Últimos pedidos"
+    const { data: reservas, error: reservasError } = await supabase
+      .from("reservas")
+      .select("codigo_reserva, fecha_inicio, fecha_fin, estado")
+      .eq("cliente_id", id)
+      .order("created_at", { ascending: false });
+
+    if (reservasError) throw reservasError;
+
+    const formatDateEs = (value: string | null) => {
+      if (!value) return "-";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value.slice(0, 10);
+      return date.toLocaleDateString("es-ES");
+    };
+
+    const pedidos = (reservas ?? []).map((r) => {
+      const inicio = formatDateEs(r.fecha_inicio as string | null);
+      const fin = formatDateEs(r.fecha_fin as string | null);
+      return `Reserva ${r.codigo_reserva} · ${inicio} - ${fin} · ${r.estado}`;
+    });
+
     return {
       id: data.id,
       name: data.nombre,
       surname: data.apellidos ?? "",
       email: data.email,
       phoneNumber: data.telefono ?? "",
-      pedidos: [],
+      pedidos,
     } as Cliente;
   },
 

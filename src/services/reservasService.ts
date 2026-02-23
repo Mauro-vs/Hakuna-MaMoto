@@ -98,7 +98,22 @@ export const reservasService = {
   async listByUsuario(usuarioId: string) {
     const { data, error } = await supabase
       .from("reservas")
-      .select("id, codigo_reserva, fecha_inicio, fecha_fin, estado, created_at")
+      .select(
+        `
+        id,
+        codigo_reserva,
+        fecha_inicio,
+        fecha_fin,
+        estado,
+        created_at,
+        notas_cliente,
+        lineas_reserva(
+          dias,
+          precio_dia_pactado,
+          modelos(marca_modelo)
+        )
+      `,
+      )
       .eq("usuario_id", usuarioId)
       .order("created_at", { ascending: false });
 

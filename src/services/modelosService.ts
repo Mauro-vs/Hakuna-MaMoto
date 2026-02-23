@@ -22,7 +22,7 @@ export const modelosService = {
         "id, marca_modelo, descripcion, cilindrada, precio_dia, imagen_url, activo",
       )
       .or("activo.is.null,activo.eq.true")
-      .order("id", { ascending: true });
+      .order("precio_dia", { ascending: true });
 
     if (error) throw error;
 

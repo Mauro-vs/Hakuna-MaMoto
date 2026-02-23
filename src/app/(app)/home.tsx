@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useThemeColors } from '../../store/preferencesStore';
 import { useUserStore } from '../../store/userStore';
 import { OptionsSelect } from '../../components/home/optionsSelect';
@@ -10,6 +11,7 @@ import { supabase } from '../../services/supabaseClient';
 
 
 export default function Home() {
+  const router = useRouter();
   const colors = useThemeColors();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const user = useUserStore((state) => state.user);
@@ -93,6 +95,25 @@ export default function Home() {
 
       {/* Acciones principales */}
       <OptionsSelect />
+
+      {/* Acceso a favoritos */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Motos</Text>
+        <Pressable
+          style={styles.favoritesButton}
+          onPress={() => router.push('/modelos/favoritos')}
+        >
+          <View style={styles.favoritesIconWrap}>
+            <Ionicons name="heart-outline" size={22} color="#ffffff" />
+          </View>
+          <View style={styles.favoritesTextWrap}>
+            <Text style={styles.favoritesTitle}>Ver favoritos</Text>
+            <Text style={styles.favoritesSubtitle}>
+              Tus motos guardadas para reservar más rápido.
+            </Text>
+          </View>
+        </Pressable>
+      </View>
 
       {/* Info según rol */}
       <AdminPanel rol={user?.rol} />
@@ -371,5 +392,42 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
     footerText: {
       fontSize: 12,
       color: colors.grayPlaceholder,
+    },
+    favoritesButton: {
+      backgroundColor: colors.backgroundCard,
+      borderRadius: 16,
+      paddingVertical: 14,
+      paddingHorizontal: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 4,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: colors.borderMain,
+    },
+    favoritesIconWrap: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.primaryButton,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    favoritesTextWrap: {
+      flex: 1,
+    },
+    favoritesTitle: {
+      fontSize: 15,
+      fontWeight: '700',
+      color: colors.textTitle,
+      marginBottom: 2,
+    },
+    favoritesSubtitle: {
+      fontSize: 12,
+      color: colors.textBody,
     },
   });

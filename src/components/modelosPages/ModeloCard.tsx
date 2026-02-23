@@ -5,6 +5,9 @@ import { router } from "expo-router";
 import type { Modelo } from "../../data/Modelos";
 import { useThemeColors } from "../../store/preferencesStore";
 
+// NUEVO: Importamos el store de favoritos que hemos creado
+import { useFavoritesStore } from "../../store/favoritesStore";
+
 type ItemProps = {
   item: Modelo;
   isAdmin?: boolean;
@@ -17,6 +20,10 @@ export const ModeloCard: React.FC<ItemProps> = ({ item, isAdmin, onEdit, onDelet
   const s = createStyles(colors);
   const priceLabel = `${item.precioDia.toFixed(2)} €/dia`;
 
+  const { favoriteIds, toggleFavorite } = useFavoritesStore();
+  
+  const isFavorite = favoriteIds.includes(item.id.toString());
+
   return (
     <Pressable
       style={({ pressed }) => [s.card, pressed && s.cardPressed]}
@@ -25,6 +32,21 @@ export const ModeloCard: React.FC<ItemProps> = ({ item, isAdmin, onEdit, onDelet
       }
     >
       <View style={s.mediaWrap}>
+        
+        <Pressable
+          style={s.favoriteButton}
+          onPress={(event) => {
+            event.stopPropagation?.(); // Evita que se abra la pantalla de detalles al darle al corazón
+            toggleFavorite(item.id.toString());
+          }}
+        >
+          <Ionicons 
+            name={isFavorite ? "heart" : "heart-outline"} 
+            size={20} 
+            color={isFavorite ? "#ff4757" : colors.textTitle} 
+          />
+        </Pressable>
+
         {isAdmin ? (
           <View style={s.adminActions}>
             <Pressable
@@ -47,6 +69,7 @@ export const ModeloCard: React.FC<ItemProps> = ({ item, isAdmin, onEdit, onDelet
             </Pressable>
           </View>
         ) : null}
+        
         {item.imagenUrl ? (
           <Image source={{ uri: item.imagenUrl }} style={s.image} />
         ) : (
@@ -101,6 +124,7 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       overflow: "hidden",
       backgroundColor: colors.tabBackground,
       marginBottom: 12,
+      position: "relative",
     },
     image: {
       width: "100%",
@@ -147,6 +171,20 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       fontSize: 12,
       color: colors.grayLabelText,
       fontWeight: "600",
+    },
+    favoriteButton: {
+      position: "absolute",
+      top: 8,
+      left: 8,
+      zIndex: 2,
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: colors.backgroundCard,
+      borderWidth: 1,
+      borderColor: colors.borderMain,
+      alignItems: "center",
+      justifyContent: "center",
     },
     adminActions: {
       position: "absolute",

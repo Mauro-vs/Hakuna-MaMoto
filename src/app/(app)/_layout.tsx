@@ -154,6 +154,7 @@ export default function HomeLayout() {
       <Tabs.Screen name="modelos/[id]" options={{ href: null }} />
       <Tabs.Screen name="preferences" options={{ href: null }} />
       <Tabs.Screen name="profile/edit-profile" options={{ href: null }} />
+      <Tabs.Screen name="modelos/favoritos" options={{ href: null }} />
     </Tabs>
     </>
   );

@@ -104,19 +104,44 @@ export default function ClienteDetallado() {
         </View>
       </View>
 
-      {/* Pedidos */}
-      <Text style={s.sectionTitle}>Últimos pedidos</Text>
+      {/* Reservas del cliente */}
+      <Text style={s.sectionTitle}>Reservas recientes</Text>
 
       <View style={s.card}>
         {(cliente.pedidos ?? []).length === 0 ? (
-          <Text style={s.empty}>Este cliente no tiene pedidos</Text>
+          <View style={s.emptyWrapper}>
+            <Feather name="calendar" size={18} color={colors.grayPlaceholder} />
+            <Text style={s.empty}>Este cliente no tiene reservas</Text>
+          </View>
         ) : (
-          (cliente.pedidos ?? []).map((p, i) => (
-            <View key={i} style={s.pedido}>
-              <Feather name="shopping-bag" size={16} color={colors.grayLabelText} />
-              <Text style={s.pedidoText}>{p}</Text>
-            </View>
-          ))
+          (cliente.pedidos ?? []).map((p, i) => {
+            const [codigoRaw, rangoRaw, estadoRaw] = p.split("·").map((t) => t.trim());
+            const codigo = codigoRaw || "Reserva";
+            const rango = rangoRaw || "";
+            const estado = estadoRaw || "";
+
+            return (
+              <View key={i} style={s.pedidoCard}>
+                <View style={s.pedidoHeader}>
+                  <Feather name="shopping-bag" size={18} color={colors.iconMain} />
+                  <View style={s.pedidoInfo}>
+                    <Text style={s.pedidoTitle}>{codigo}</Text>
+                    {!!rango && <Text style={s.pedidoSubtitle}>{rango}</Text>}
+                  </View>
+                  {!!estado && (
+                    <View
+                      style={[
+                        s.pedidoStatusPill,
+                        estado === "CANCELADA" && { backgroundColor: colors.errorButton, borderColor: colors.errorBorder },
+                      ]}
+                    >
+                      <Text style={s.pedidoStatusText}>{estado}</Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            );
+          })
         )}
       </View>
 
@@ -248,22 +273,61 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       marginBottom: 8,
     },
 
-    pedido: {
+    pedidoCard: {
+      backgroundColor: colors.backgroundMain,
+      borderRadius: 12,
+      padding: 10,
+      marginBottom: 8,
+      borderWidth: 1,
+      borderColor: colors.borderMain,
+    },
+
+    pedidoHeader: {
       flexDirection: "row",
       alignItems: "center",
       gap: 10,
-      paddingVertical: 8,
     },
 
-    pedidoText: {
-      fontSize: 14,
+    pedidoTitle: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: colors.grayLabelText,
+    },
+
+    pedidoInfo: {
+      flex: 1,
+    },
+
+    pedidoSubtitle: {
+      fontSize: 12,
       color: colors.textValue,
+      marginTop: 2,
+    },
+
+    pedidoStatusPill: {
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: colors.borderMain,
+      backgroundColor: colors.backgroundMain,
+    },
+
+    pedidoStatusText: {
+      fontSize: 11,
+      fontWeight: "600",
+      color: colors.grayLabelText,
     },
 
     empty: {
       fontSize: 14,
       color: colors.grayPlaceholder,
       textAlign: "center",
+    },
+
+    emptyWrapper: {
+      alignItems: "center",
+      gap: 6,
     },
     deleteButton: {
       backgroundColor: colors.errorButton,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useFocusEffect } from "@react-navigation/native";
 import { useThemeColors } from "../../../store/preferencesStore";
 import { useModelo } from "../../../hooks/useModelos";
 import { useUserStore } from "../../../store/userStore";
@@ -39,11 +40,28 @@ export default function ModeloDetalle() {
   const isCliente = user?.rol === "NORMAL";
   const isAdmin = user?.rol === "ADMIN";
   const canViewReserveForm = isCliente || isAdmin;
-  const canReserve = useMemo(
-    () => canViewReserveForm && !!user?.id && !!user?.email,
-    [canViewReserveForm, user?.id, user?.email],
-  );
-  const formatDate = (value: Date | null) => (value ? value.toISOString().slice(0, 10) : "");
+  const canReserve = useMemo(() => {
+    if (!canViewReserveForm || !user?.id || !user?.email) return false;
+    if (!fechaInicio || !fechaFin) return false;
+    const diff = fechaFin.getTime() - fechaInicio.getTime();
+    return diff > 0;
+  }, [canViewReserveForm, user?.id, user?.email, fechaInicio, fechaFin]);
+
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+  const formatDateEs = (value: Date | null) => {
+    if (!value) return "";
+    const day = String(value.getDate()).padStart(2, "0");
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const year = value.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatDateApi = (value: Date | null) =>
+    value ? value.toISOString().slice(0, 10) : "";
   const daysCount = useMemo(() => {
     if (!fechaInicio || !fechaFin) return null;
     const diff = fechaFin.getTime() - fechaInicio.getTime();
@@ -51,6 +69,16 @@ export default function ModeloDetalle() {
     return days > 0 ? days : null;
   }, [fechaInicio, fechaFin]);
   const totalPrice = daysCount ? daysCount * (modelo?.precioDia ?? 0) : null;
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setFechaInicio(null);
+        setFechaFin(null);
+        setNotas("");
+      };
+    }, []),
+  );
 
   if (isLoading) {
     return (
@@ -119,7 +147,7 @@ export default function ModeloDetalle() {
               onPress={() => setShowInicioPicker(true)}
             >
               <Text style={fechaInicio ? s.inputText : s.inputPlaceholder}>
-                {fechaInicio ? formatDate(fechaInicio) : "Fecha inicio"}
+                {fechaInicio ? formatDateEs(fechaInicio) : "Fecha inicio"}
               </Text>
             </Pressable>
             <Pressable
@@ -127,7 +155,7 @@ export default function ModeloDetalle() {
               onPress={() => setShowFinPicker(true)}
             >
               <Text style={fechaFin ? s.inputText : s.inputPlaceholder}>
-                {fechaFin ? formatDate(fechaFin) : "Fecha fin"}
+                {fechaFin ? formatDateEs(fechaFin) : "Fecha fin"}
               </Text>
             </Pressable>
             <TextInput
@@ -142,8 +170,8 @@ export default function ModeloDetalle() {
             <View style={s.summaryCard}>
               <Text style={s.summaryTitle}>Resumen</Text>
               <Text style={s.summaryText}>Modelo: {modelo.marcaModelo}</Text>
-              <Text style={s.summaryText}>Inicio: {formatDate(fechaInicio) || "-"}</Text>
-              <Text style={s.summaryText}>Fin: {formatDate(fechaFin) || "-"}</Text>
+              <Text style={s.summaryText}>Inicio: {formatDateEs(fechaInicio) || "-"}</Text>
+              <Text style={s.summaryText}>Fin: {formatDateEs(fechaFin) || "-"}</Text>
               <Text style={s.summaryText}>Dias: {daysCount ?? "-"}</Text>
               <Text style={s.summaryText}>
                 Total: {totalPrice !== null ? `${totalPrice.toFixed(2)} €` : "-"}
@@ -173,8 +201,8 @@ export default function ModeloDetalle() {
                     nombre: user.nombre,
                     modeloId: modelo.id,
                     precioDia: modelo.precioDia,
-                    fechaInicio: formatDate(fechaInicio),
-                    fechaFin: formatDate(fechaFin),
+                    fechaInicio: formatDateApi(fechaInicio),
+                    fechaFin: formatDateApi(fechaFin),
                     notas: notas.trim() || undefined,
                   });
                   setNotas("");
@@ -243,14 +271,30 @@ export default function ModeloDetalle() {
               value={(activePicker === "inicio" ? fechaInicio : fechaFin) ?? new Date()}
               mode="date"
               display={Platform.OS === "ios" ? "inline" : "calendar"}
+              minimumDate={activePicker === "inicio" ? today : fechaInicio ?? today}
               onChange={(_event, selectedDate) => {
                 if (Platform.OS !== "ios") {
                   setShowInicioPicker(false);
                   setShowFinPicker(false);
                 }
                 if (!selectedDate) return;
-                if (activePicker === "inicio") setFechaInicio(selectedDate);
-                if (activePicker === "fin") setFechaFin(selectedDate);
+                if (activePicker === "inicio") {
+                  setFechaInicio(selectedDate);
+                  if (fechaFin && selectedDate > fechaFin) {
+                    // Si la nueva fecha de inicio es posterior a la de fin, limpiamos fin
+                    setFechaFin(null);
+                  }
+                }
+                if (activePicker === "fin") {
+                  if (fechaInicio && selectedDate <= fechaInicio) {
+                    Alert.alert(
+                      "Fecha no válida",
+                      "La fecha de fin debe ser posterior a la fecha de inicio",
+                    );
+                    return;
+                  }
+                  setFechaFin(selectedDate);
+                }
               }}
             />
           </View>
