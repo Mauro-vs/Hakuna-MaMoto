@@ -5,8 +5,8 @@ import {
   logoutService,
   registerService,
   onAuthStateChange,
+  getCurrentAuthUser,
 } from "../services/authService";
-import { supabase } from "../services/supabaseClient";
 import { AuthUser } from "../types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -31,13 +31,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     (async () => {
       try {
-        const { data } = await supabase.auth.getSession();
+        const currentUser = await getCurrentAuthUser();
         if (!mounted) return;
-        if (data.session?.user) {
-          // onAuthStateChange will enrich the user
-        } else {
-          setUser(null);
-        }
+        setUser(currentUser);
       } finally {
         if (mounted) {
           setIsLoading(false);

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { LoginCard } from '../../components/login/LoginCard';
 import { useThemeColors } from '../../store/preferencesStore';
@@ -11,7 +11,15 @@ export default function Login() {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { isSignedIn, isLoading } = useAuth();
 
-  if (isSignedIn && !isLoading) {
+  if (isLoading) {
+    return (
+      <View style={styles.screen}>
+        <ActivityIndicator size="large" color={colors.avatarBackground} />
+      </View>
+    );
+  }
+
+  if (isSignedIn) {
     return <Redirect href="/home" />;
   }
 
