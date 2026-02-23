@@ -119,7 +119,7 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       opacity: 0.85,
     },
     mediaWrap: {
-      height: 160,
+      height: 200,
       borderRadius: 12,
       overflow: "hidden",
       backgroundColor: colors.tabBackground,

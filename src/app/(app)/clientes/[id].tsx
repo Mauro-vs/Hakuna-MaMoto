@@ -132,6 +132,11 @@ export default function ClienteDetallado() {
                     <View
                       style={[
                         s.pedidoStatusPill,
+                        estado === "PREPARADA" && { backgroundColor: "rgba(59, 130, 246, 0.15)", borderColor: "#3B82F6" },
+                        estado === "ENTREGADA" && { backgroundColor: "rgba(16, 185, 129, 0.15)", borderColor: "#10B981" },
+                        estado === "DEVUELTA" && { backgroundColor: "rgba(37, 99, 235, 0.12)", borderColor: "#2563EB" },
+                        estado === "REVISION" && { backgroundColor: "rgba(245, 158, 11, 0.15)", borderColor: "#F59E0B" },
+                        estado === "FINALIZADA" && { backgroundColor: "rgba(22, 163, 74, 0.18)", borderColor: "#16A34A" },
                         estado === "CANCELADA" && { backgroundColor: colors.errorButton, borderColor: colors.errorBorder },
                       ]}
                     >

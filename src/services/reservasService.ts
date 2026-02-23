@@ -73,6 +73,7 @@ export const reservasService = {
         fecha_inicio: inicio.toISOString(),
         fecha_fin: fin.toISOString(),
         notas_cliente: input.notas ?? null,
+        estado: "PREPARADA",
         usuario_id: input.usuarioId,
       })
       .select("id")
@@ -93,6 +94,57 @@ export const reservasService = {
     if (lineaError) throw lineaError;
 
     return reserva.id;
+  },
+
+  async updateEstadoReserva(
+    id: number,
+    usuarioId: string,
+    nuevoEstado: string,
+  ) {
+    const { error } = await supabase
+      .from("reservas")
+      .update({ estado: nuevoEstado })
+      .eq("id", id)
+      .eq("usuario_id", usuarioId);
+
+    if (error) throw error;
+  },
+
+  async updateFechasReserva(
+    id: number,
+    usuarioId: string,
+    fechaInicio: string,
+    fechaFin: string,
+  ) {
+    const inicio = toDateOnly(fechaInicio);
+    const fin = toDateOnly(fechaFin);
+
+    if (!inicio || !fin) {
+      throw new Error("Fechas invalidas. Usa el formato AAAA-MM-DD");
+    }
+
+    const dias = calcDias(inicio, fin);
+    if (dias <= 0) {
+      throw new Error("La fecha de fin debe ser posterior a la de inicio");
+    }
+
+    const { error } = await supabase
+      .from("reservas")
+      .update({
+        fecha_inicio: inicio.toISOString(),
+        fecha_fin: fin.toISOString(),
+      })
+      .eq("id", id)
+      .eq("usuario_id", usuarioId);
+
+    if (error) throw error;
+
+    const { error: lineasError } = await supabase
+      .from("lineas_reserva")
+      .update({ dias })
+      .eq("reserva_id", id);
+
+    if (lineasError) throw lineasError;
   },
 
   async listByUsuario(usuarioId: string) {

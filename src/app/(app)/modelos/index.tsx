@@ -169,7 +169,7 @@ export default function ModelosScreen() {
     return data.publicUrl;
   };
 
-  const handlePickImage = async () => {
+  const handlePickImageFromLibrary = async () => {
     try {
       setIsUploadingImage(true);
       const { status } =
@@ -196,6 +196,53 @@ export default function ModelosScreen() {
     } finally {
       setIsUploadingImage(false);
     }
+  };
+
+  const handlePickImageFromCamera = async () => {
+    try {
+      setIsUploadingImage(true);
+
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permiso requerido", "Necesitamos acceso a la cámara");
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.85,
+      });
+
+      if (result.canceled || !result.assets?.[0]?.uri) return;
+
+      const publicUrl = await uploadModeloImage(result.assets[0].uri);
+      setForm((prev) => ({ ...prev, imagenUrl: publicUrl }));
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "No se pudo hacer la foto");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const openImageOptions = () => {
+    Alert.alert("Seleccionar imagen", "Elige de dónde obtener la imagen", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Galería",
+        onPress: () => {
+          void handlePickImageFromLibrary();
+        },
+      },
+      {
+        text: "Cámara",
+        onPress: () => {
+          void handlePickImageFromCamera();
+        },
+      },
+    ]);
   };
 
   const handleDelete = (item: Modelo) => {
@@ -350,7 +397,7 @@ export default function ModelosScreen() {
                     s.imageButton,
                     isUploadingImage && s.imageButtonDisabled,
                   ]}
-                  onPress={handlePickImage}
+                  onPress={openImageOptions}
                   disabled={isUploadingImage}
                 >
                   <Text style={s.imageButtonText}>
