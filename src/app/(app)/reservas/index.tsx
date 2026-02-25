@@ -1,172 +1,37 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Modal, Platform, Pressable, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useMemo } from "react";
+import { ActivityIndicator, Alert, FlatList, Modal, Platform, Pressable, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { useThemeColors } from "../../../store/preferencesStore";
-import { useUserStore } from "../../../store/userStore";
-import { reservasService } from "../../../services/reservasService";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { createReservasStyles } from "../../../style/reservas.styles";
+import { useReservas } from "../../../useControllers/useReservas";
 
 export default function ReservasScreen() {
   const colors = useThemeColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
-  const user = useUserStore((state: { user: any; }) => state.user);
-  const isAdmin = user?.rol === "ADMIN";
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [reservas, setReservas] = useState<Array<{
-    id: number;
-    codigo_reserva: string;
-    fecha_inicio: string;
-    fecha_fin: string;
-    estado: string;
-    created_at?: string;
-    notas_cliente?: string | null;
-    lineas_reserva?: Array<{
-      dias?: number | null;
-      precio_dia_pactado?: number | null;
-      modelos?: { marca_modelo?: string | null } | null;
-    }>;
-  }>>([]);
+  const styles = useMemo(() => createReservasStyles(colors), [colors]);
 
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editingReservaId, setEditingReservaId] = useState<number | null>(null);
-  const [editFechaInicio, setEditFechaInicio] = useState<Date | null>(null);
-  const [editFechaFin, setEditFechaFin] = useState<Date | null>(null);
-  const [activePicker, setActivePicker] = useState<"inicio" | "fin" | null>(null);
-  const [isSavingEdit, setIsSavingEdit] = useState(false);
-
-  const formatDateEs = (value: string) => {
-    if (!value) return "-";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      // Si no se puede parsear, intento formatear manualmente 'YYYY-MM-DD' -> 'DD/MM/YYYY'
-      const base = value.slice(0, 10);
-      const parts = base.split("-");
-      if (parts.length === 3) {
-        const [y, m, d] = parts;
-        return `${d}/${m}/${y}`;
-      }
-      return base;
-    }
-    return date.toLocaleDateString("es-ES");
-  };
-
-  const loadReservas = useCallback(async () => {
-    if (!user?.id) {
-      setReservas([]);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const data = await reservasService.listByUsuario(user.id);
-      setReservas(data as typeof reservas);
-    } catch (error) {
-      console.error(error);
-      setReservas([]);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    void loadReservas();
-  }, [loadReservas]);
-
-  const handleCancelReserva = useCallback(
-    (reservaId: number) => {
-      if (!user?.id) return;
-      Alert.alert(
-        "Cancelar reserva",
-        "¿Seguro que quieres cancelar esta reserva?",
-        [
-          { text: "No", style: "cancel" },
-          {
-            text: "Sí, cancelar",
-            style: "destructive",
-            onPress: async () => {
-              try {
-                await reservasService.updateEstadoReserva(reservaId, user.id, "CANCELADA");
-                await loadReservas();
-              } catch (error) {
-                console.error(error);
-                Alert.alert("Error", "No se pudo cancelar la reserva");
-              }
-            },
-          },
-        ],
-      );
-    },
-    [loadReservas],
-  );
-
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
-
-  const openEditFechas = useCallback(
-    (reserva: { id: number; fecha_inicio: string; fecha_fin: string }) => {
-      const inicio = reserva.fecha_inicio ? new Date(reserva.fecha_inicio) : today;
-      const fin = reserva.fecha_fin ? new Date(reserva.fecha_fin) : inicio;
-      setEditingReservaId(reserva.id);
-      setEditFechaInicio(inicio);
-      setEditFechaFin(fin);
-      setActivePicker(null);
-      setEditModalVisible(true);
-    },
-    [today],
-  );
-
-  const formatDateApi = (d: Date | null) => {
-    if (!d) return "";
-    const year = d.getFullYear();
-    const month = `${d.getMonth() + 1}`.padStart(2, "0");
-    const day = `${d.getDate()}`.padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  const handleSaveFechas = useCallback(async () => {
-    if (!user?.id || !editingReservaId || !editFechaInicio || !editFechaFin) {
-      Alert.alert("Error", "Faltan datos de la reserva o las fechas");
-      return;
-    }
-
-    if (editFechaFin <= editFechaInicio) {
-      Alert.alert("Fecha no válida", "La fecha de fin debe ser posterior a la fecha de inicio");
-      return;
-    }
-
-    try {
-      setIsSavingEdit(true);
-      await reservasService.updateFechasReserva(
-        editingReservaId,
-        user.id,
-        formatDateApi(editFechaInicio),
-        formatDateApi(editFechaFin),
-      );
-      setEditModalVisible(false);
-      setEditingReservaId(null);
-      setEditFechaInicio(null);
-      setEditFechaFin(null);
-      await loadReservas();
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "No se pudieron actualizar las fechas");
-    } finally {
-      setIsSavingEdit(false);
-    }
-  }, [user?.id, editingReservaId, editFechaInicio, editFechaFin, loadReservas]);
-
-  useFocusEffect(
-    useCallback(() => {
-      void loadReservas();
-    }, [loadReservas])
-  );
+  const {
+    isAdmin,
+    reservas,
+    isLoading,
+    isRefreshing,
+    handleRefresh,
+    formatDateEs,
+    editModalVisible,
+    openEditFechas,
+    closeEditModal,
+    editFechaInicio,
+    editFechaFin,
+    today,
+    activePicker,
+    setActivePicker,
+    setEditFechaInicio,
+    setEditFechaFin,
+    handleSaveFechas,
+    isSavingEdit,
+    handleCancelReserva,
+  } = useReservas();
 
   if (isLoading) {
     return (
@@ -200,10 +65,7 @@ export default function ReservasScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
-            onRefresh={() => {
-              setIsRefreshing(true);
-              void loadReservas();
-            }}
+            onRefresh={handleRefresh}
             tintColor={colors.primaryButton}
           />
         }
@@ -320,15 +182,13 @@ export default function ReservasScreen() {
           animationType="fade"
           visible={editModalVisible}
           onRequestClose={() => {
-            setEditModalVisible(false);
-            setActivePicker(null);
+            closeEditModal();
           }}
         >
           <Pressable
             style={styles.modalBackdrop}
             onPress={() => {
-              setEditModalVisible(false);
-              setActivePicker(null);
+              closeEditModal();
             }}
           />
           <View style={styles.modalContainer}>
@@ -337,8 +197,7 @@ export default function ReservasScreen() {
                 <Text style={styles.modalTitle}>Editar fechas</Text>
                 <Pressable
                   onPress={() => {
-                    setEditModalVisible(false);
-                    setActivePicker(null);
+                    closeEditModal();
                   }}
                 >
                   <Text style={styles.modalAction}>Cerrar</Text>
@@ -417,337 +276,3 @@ export default function ReservasScreen() {
     </View>
   );
 }
-
-const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.backgroundMain,
-      padding: 16,
-    },
-    center: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: colors.backgroundMain,
-    },
-    helper: {
-      marginTop: 12,
-      color: colors.grayLabelText,
-    },
-    card: {
-      backgroundColor: colors.backgroundCard,
-      borderRadius: 14,
-      padding: 14,
-      marginBottom: 12,
-      borderWidth: 1,
-      borderColor: colors.borderMain,
-    },
-    header: {
-      backgroundColor: colors.backgroundCard,
-      borderRadius: 14,
-      padding: 14,
-      marginBottom: 12,
-      borderWidth: 1,
-      borderColor: colors.borderMain,
-    },
-    headerRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginBottom: 6,
-    },
-    headerTitle: {
-      fontSize: 14,
-      fontWeight: "700",
-      color: colors.textTitle,
-    },
-    headerSubtitle: {
-      marginTop: 4,
-      fontSize: 12,
-      color: colors.grayLabelText,
-    },
-    headerHelper: {
-      marginTop: 4,
-      fontSize: 11,
-      color: colors.grayPlaceholder,
-    },
-    headerIconBadge: {
-      width: 34,
-      height: 34,
-      borderRadius: 17,
-      borderWidth: 1,
-      borderColor: colors.borderMain,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: colors.tabBackground,
-    },
-    cardHeader: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 10,
-      marginBottom: 6,
-    },
-    codeRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 6,
-    },
-    code: {
-      fontSize: 14,
-      fontWeight: "700",
-      color: colors.textTitle,
-    },
-    dateRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginTop: 8,
-      gap: 12,
-    },
-    dateItem: {
-      flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 6,
-    },
-    dateSeparator: {
-      width: 1,
-      height: 18,
-      backgroundColor: colors.borderMain,
-      opacity: 0.4,
-    },
-    modelRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 6,
-      marginTop: 4,
-    },
-    modelText: {
-      fontSize: 12,
-      fontWeight: "600",
-      color: colors.textBody,
-    },
-    metaLabel: {
-      fontSize: 11,
-      color: colors.grayLabelText,
-      textTransform: "uppercase",
-    },
-    metaValue: {
-      fontSize: 12,
-      fontWeight: "600",
-      color: colors.textBody,
-    },
-    priceRow: {
-      marginTop: 6,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-    },
-    priceText: {
-      fontSize: 12,
-      color: colors.textBody,
-    },
-    totalText: {
-      fontSize: 13,
-      fontWeight: "700",
-      color: colors.textTitle,
-    },
-    statusPill: {
-      paddingHorizontal: 10,
-      paddingVertical: 4,
-      borderRadius: 999,
-      backgroundColor: colors.tabBackground,
-      borderWidth: 1,
-      borderColor: colors.borderMain,
-    },
-    statusText: {
-      fontSize: 11,
-      fontWeight: "700",
-      color: colors.textBody,
-    },
-    statusPrepared: {
-      backgroundColor: "rgba(59, 130, 246, 0.15)",
-      borderColor: "#3B82F6",
-    },
-    statusDelivered: {
-      backgroundColor: "rgba(16, 185, 129, 0.15)",
-      borderColor: "#10B981",
-    },
-    statusReturned: {
-      backgroundColor: "rgba(37, 99, 235, 0.12)",
-      borderColor: "#2563EB",
-    },
-    statusReview: {
-      backgroundColor: "rgba(245, 158, 11, 0.15)",
-      borderColor: "#F59E0B",
-    },
-    statusFinished: {
-      backgroundColor: "rgba(22, 163, 74, 0.18)",
-      borderColor: "#16A34A",
-    },
-    actionsRow: {
-      marginTop: 10,
-      flexDirection: "row",
-      justifyContent: "flex-end",
-    },
-    cancelButton: {
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      borderRadius: 999,
-      borderWidth: 1,
-      borderColor: colors.errorBorder,
-      backgroundColor: "rgba(239, 68, 68, 0.06)",
-    },
-    cancelButtonText: {
-      fontSize: 12,
-      fontWeight: "600",
-      color: colors.errorText,
-    },
-    editButton: {
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      borderRadius: 999,
-      borderWidth: 1,
-      borderColor: colors.borderMain,
-      backgroundColor: colors.backgroundMain,
-      marginRight: 8,
-    },
-    editButtonText: {
-      fontSize: 12,
-      fontWeight: "600",
-      color: colors.textBody,
-    },
-    statusCancel: {
-      backgroundColor: "rgba(239, 68, 68, 0.15)",
-      borderColor: "#EF4444",
-    },
-    emptyContainer: {
-      flexGrow: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    emptyWrapper: {
-      alignItems: "center",
-      justifyContent: "center",
-      paddingVertical: 40,
-      gap: 8,
-    },
-    emptyTitle: {
-      fontSize: 15,
-      fontWeight: "600",
-      color: colors.textTitle,
-    },
-    emptyText: {
-      color: colors.grayPlaceholder,
-      fontSize: 13,
-      textAlign: "center",
-      paddingHorizontal: 24,
-    },
-    notesBox: {
-      marginTop: 8,
-      padding: 8,
-      borderRadius: 8,
-      backgroundColor: colors.backgroundMain,
-      borderWidth: 1,
-      borderColor: colors.borderMain,
-    },
-    notesLabel: {
-      fontSize: 11,
-      fontWeight: "700",
-      color: colors.grayLabelText,
-      marginBottom: 2,
-    },
-    notesText: {
-      fontSize: 12,
-      color: colors.textBody,
-    },
-    modalBackdrop: {
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor: "rgba(0,0,0,0.4)",
-    },
-    modalContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    modalCard: {
-      width: "90%",
-      maxWidth: 420,
-      backgroundColor: colors.backgroundCard,
-      borderRadius: 16,
-      padding: 16,
-      borderWidth: 1,
-      borderColor: colors.borderMain,
-    },
-    modalHeader: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginBottom: 12,
-    },
-    modalTitle: {
-      fontSize: 16,
-      fontWeight: "700",
-      color: colors.textTitle,
-    },
-    modalAction: {
-      fontSize: 13,
-      fontWeight: "600",
-      color: colors.primaryButton,
-    },
-    modalRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      gap: 8,
-      marginBottom: 12,
-    },
-    modalDateButton: {
-      flex: 1,
-      borderWidth: 1,
-      borderColor: colors.inputBorder,
-      borderRadius: 10,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      backgroundColor: colors.inputBackground,
-    },
-    modalDateLabel: {
-      fontSize: 11,
-      color: colors.grayLabelText,
-      textTransform: "uppercase",
-    },
-    modalDateValue: {
-      marginTop: 4,
-      fontSize: 13,
-      color: colors.textBody,
-      fontWeight: "600",
-    },
-    pickerWrapper: {
-      borderWidth: 1,
-      borderColor: colors.borderMain,
-      borderRadius: 10,
-      padding: 6,
-      marginBottom: 12,
-      backgroundColor: colors.backgroundMain,
-    },
-    modalActionsRow: {
-      marginTop: 4,
-      flexDirection: "row",
-      justifyContent: "flex-end",
-    },
-    saveEditButton: {
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: 10,
-      backgroundColor: colors.primaryButton,
-    },
-    saveEditButtonDisabled: {
-      opacity: 0.7,
-    },
-    saveEditButtonText: {
-      fontSize: 13,
-      fontWeight: "700",
-      color: "#fff",
-    },
-  });
