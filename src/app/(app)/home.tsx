@@ -18,8 +18,6 @@ export default function Home() {
     userRoleLabel,
     userRoleIconName,
     reservationsCount,
-    handleExploreModels,
-    handleViewReservations,
     handleViewFavorites,
     userRole,
   } = useHome();
@@ -70,11 +68,21 @@ export default function Home() {
             <Text style={styles.heroBadgeText}>Alquila tu moto desde el móvil</Text>
           </View>
         </View>
-
-        <Text style={styles.heroTitle}>Alquila tu próxima moto en segundos</Text>
+        <View style={styles.heroImageWrapper}>
+          <Image
+            source={require('../../../assets/icono-hero.jpg')}
+            style={styles.heroImage}
+          />
+          <View style={styles.heroImageOverlay}>
+            <View style={styles.heroImageTextWrap}>
+              <Text style={styles.heroImageTitle}>Tu próxima moto, a un toque</Text>
+            </View>
+          </View>
+        </View>
+        {/* Si quisieras un subtítulo adicional, podríamos usar heroTitle aquí */}
         
         {/* Separador */}
-        <View style={{ height: 1, backgroundColor: colors.borderMain, marginVertical: 18 }} />
+        <View style={{ height: 1, backgroundColor: colors.borderMain, marginVertical: 16 }} />
 
         <View style={styles.heroHighlightsRow}>
           <View style={styles.heroHighlight}>
@@ -92,24 +100,6 @@ export default function Home() {
               <Text style={styles.heroHighlightSubtitle}>Scooters, naked o touring, todo en una app.</Text>
             </View>
           </View>
-        </View>
-
-        <View style={styles.heroActionsRow}>
-          <Pressable
-            style={styles.heroPrimaryButton}
-            onPress={handleExploreModels}
-          >
-            <Text style={styles.heroPrimaryButtonText}>Explorar motos disponibles</Text>
-            <Ionicons name="arrow-forward" size={18} color={colors.backgroundMain} />
-          </Pressable>
-
-          <Pressable
-            style={styles.heroSecondaryButton}
-            onPress={handleViewReservations}
-          >
-            <Ionicons name="eye-outline" size={16} color={colors.primaryButton} />
-            <Text style={styles.heroSecondaryButtonText}>Ver mis reservas activas</Text>
-          </Pressable>
         </View>
       </View>
 

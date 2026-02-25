@@ -83,7 +83,12 @@ export default function ReservasScreen() {
           const canEditDates = item.estado === "PREPARADA";
 
           return (
-          <View style={styles.card}>
+          <View
+            style={[
+              styles.card,
+              item.estado === "CANCELADA" && styles.cardCanceled,
+            ]}
+          >
             <View style={styles.cardHeader}>
               <View style={styles.codeRow}>
                 <Ionicons name="document-text-outline" size={16} color={colors.grayLabelText} />
@@ -159,16 +164,20 @@ export default function ReservasScreen() {
                   <TouchableOpacity
                     style={styles.editButton}
                     onPress={() => openEditFechas(item)}
+                    accessibilityLabel="Cambiar fechas de la reserva"
+                    accessibilityRole="button"
                   >
-                    <Text style={styles.editButtonText}>Cambiar fechas</Text>
+                    <Ionicons name="calendar-outline" size={16} color="#ffffff" />
                   </TouchableOpacity>
                 )}
                 {canCancel && (
                   <TouchableOpacity
                     style={styles.cancelButton}
                     onPress={() => handleCancelReserva(item.id)}
+                    accessibilityLabel="Cancelar reserva"
+                    accessibilityRole="button"
                   >
-                    <Text style={styles.cancelButtonText}>Cancelar reserva</Text>
+                    <Ionicons name="close-circle-outline" size={18} color="#ffffff" />
                   </TouchableOpacity>
                 )}
               </View>

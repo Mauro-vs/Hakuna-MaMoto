@@ -1,31 +1,15 @@
-import React, { useEffect, useMemo } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import React, { useMemo } from "react";
+import { View, Text, ActivityIndicator, FlatList } from "react-native";
 import { Stack } from "expo-router";
 import { useThemeColors } from "../../../store/preferencesStore";
-import { useModelosList } from "../../../hooks/useModelos";
-import { useFavoritesStore } from "../../../store/favoritesStore";
 import { ModeloCard } from "../../../components/modelosPages/ModeloCard";
-import type { Modelo } from "../../../data/Modelos";
+import { createModelosFavoritosStyles } from "../../../style/modelosFavoritos.styles";
+import { useModelosFavoritos } from "../../../useControllers/useModelosFavoritos";
 
 export default function FavoritosScreen() {
   const colors = useThemeColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
-
-  const { data, isLoading, isError } = useModelosList();
-  const { favoriteIds, loadFavorites } = useFavoritesStore();
-
-  useEffect(() => {
-    void loadFavorites();
-  }, [loadFavorites]);
-
-  const modelos: Modelo[] = data ?? [];
-  const favoritos = modelos.filter((m) => favoriteIds.includes(m.id.toString()));
+  const styles = useMemo(() => createModelosFavoritosStyles(colors), [colors]);
+  const { isLoading, isError, favoritos } = useModelosFavoritos();
 
   if (isLoading) {
     return (
@@ -72,39 +56,3 @@ export default function FavoritosScreen() {
     </>
   );
 }
-
-const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
-  StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: colors.backgroundMain,
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-    },
-    center: {
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    statusText: {
-      marginTop: 12,
-      color: colors.textBody,
-    },
-    errorText: {
-      color: colors.errorText,
-    },
-    listContent: {
-      paddingBottom: 12,
-    },
-    emptyTitle: {
-      fontSize: 16,
-      fontWeight: "600",
-      color: colors.textBody,
-      marginBottom: 4,
-      textAlign: "center",
-    },
-    emptyDesc: {
-      fontSize: 13,
-      color: colors.grayPlaceholder,
-      textAlign: "center",
-    },
-  });
