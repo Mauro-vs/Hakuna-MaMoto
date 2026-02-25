@@ -180,7 +180,7 @@ export default function ModelosScreen() {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images", "videos"],
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.85,
@@ -209,7 +209,7 @@ export default function ModelosScreen() {
       }
 
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images", "videos"],
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.85,

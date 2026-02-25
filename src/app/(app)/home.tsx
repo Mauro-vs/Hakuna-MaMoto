@@ -93,8 +93,57 @@ export default function Home() {
         </View>
       </View>
 
-      {/* Acciones principales */}
-      <OptionsSelect />
+      {/* Hero para vender la app */}
+      <View style={styles.heroContainer}>
+        <View style={styles.heroBadgeRow}>
+          <View style={styles.heroBadge}>
+            <Ionicons name="speedometer" size={14} color={colors.primaryButton} />
+            <Text style={styles.heroBadgeText}>Alquila tu moto desde el móvil</Text>
+          </View>
+        </View>
+
+        <Text style={styles.heroTitle}>Alquila tu próxima moto en segundos</Text>
+        <Text style={styles.heroSubtitle}>
+          Elige modelo, fecha y duración desde tu móvil. Llega y ten tu moto lista para salir
+          a rodar, sin llamadas ni papeleo.
+        </Text>
+
+        <View style={styles.heroHighlightsRow}>
+          <View style={styles.heroHighlight}>
+            <Ionicons name="calendar-outline" size={18} color={colors.primaryButton} />
+            <View style={styles.heroHighlightTextWrap}>
+              <Text style={styles.heroHighlightTitle}>Reserva en pocos toques</Text>
+              <Text style={styles.heroHighlightSubtitle}>Selecciona moto, días y listo para recoger.</Text>
+            </View>
+          </View>
+
+          <View style={styles.heroHighlight}>
+            <Ionicons name="construct-outline" size={18} color={colors.primaryButton} />
+            <View style={styles.heroHighlightTextWrap}>
+              <Text style={styles.heroHighlightTitle}>Motos para cada plan</Text>
+              <Text style={styles.heroHighlightSubtitle}>Scooters, naked o touring, todo en una app.</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.heroActionsRow}>
+          <Pressable
+            style={styles.heroPrimaryButton}
+            onPress={() => router.push('/modelos')}
+          >
+            <Text style={styles.heroPrimaryButtonText}>Explorar motos disponibles</Text>
+            <Ionicons name="arrow-forward" size={18} color={colors.backgroundMain} />
+          </Pressable>
+
+          <Pressable
+            style={styles.heroSecondaryButton}
+            onPress={() => router.push('/reservas')}
+          >
+            <Ionicons name="eye-outline" size={16} color={colors.primaryButton} />
+            <Text style={styles.heroSecondaryButtonText}>Ver mis reservas activas</Text>
+          </Pressable>
+        </View>
+      </View>
 
       {/* Acceso a favoritos */}
       <View style={styles.section}>
@@ -133,12 +182,125 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
       paddingTop: 16,
       paddingBottom: 32,
     },
+    heroContainer: {
+      backgroundColor: colors.backgroundCard,
+      borderRadius: 24,
+      paddingVertical: 24,
+      paddingHorizontal: 20,
+      marginBottom: 24,
+      shadowColor: '#000',
+      shadowOpacity: 0.12,
+      shadowOffset: { width: 0, height: 6 },
+      shadowRadius: 12,
+      elevation: 6,
+      borderWidth: 0.5,
+      borderColor: colors.borderMain,
+    },
+    heroBadgeRow: {
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      marginBottom: 10,
+    },
+    heroBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingVertical: 4,
+      paddingHorizontal: 10,
+      borderRadius: 999,
+      backgroundColor: colors.backgroundMain,
+      borderWidth: 1,
+      borderColor: colors.borderMain,
+    },
+    heroBadgeText: {
+      fontSize: 11,
+      fontWeight: '600',
+      color: colors.textBody,
+    },
+    heroTitle: {
+      fontSize: 22,
+      fontWeight: '900',
+      color: colors.textTitle,
+      letterSpacing: 0.3,
+      marginBottom: 6,
+    },
+    heroSubtitle: {
+      fontSize: 13,
+      color: colors.textBody,
+      lineHeight: 18,
+      marginBottom: 14,
+    },
+    heroHighlightsRow: {
+      flexDirection: 'row',
+      gap: 12,
+      marginBottom: 16,
+    },
+    heroHighlight: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 8,
+      paddingVertical: 10,
+      paddingHorizontal: 10,
+      borderRadius: 14,
+      backgroundColor: colors.backgroundMain,
+    },
+    heroHighlightTextWrap: {
+      flex: 1,
+    },
+    heroHighlightTitle: {
+      fontSize: 13,
+      fontWeight: '700',
+      color: colors.textTitle,
+      marginBottom: 2,
+    },
+    heroHighlightSubtitle: {
+      fontSize: 11,
+      color: colors.textBody,
+    },
+    heroActionsRow: {
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      gap: 10,
+      marginTop: 4,
+    },
+    heroPrimaryButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      paddingVertical: 11,
+      borderRadius: 14,
+      backgroundColor: colors.primaryButton,
+    },
+    heroPrimaryButtonText: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: colors.backgroundMain,
+    },
+    heroSecondaryButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      borderRadius: 14,
+      backgroundColor: colors.backgroundMain,
+      borderWidth: 1,
+      borderColor: colors.borderMain,
+    },
+    heroSecondaryButtonText: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: colors.primaryButton,
+    },
     headerCard: {
       backgroundColor: colors.backgroundCard,
       borderRadius: 24,
       paddingVertical: 32,
       paddingHorizontal: 24,
-      marginBottom: 28,
+      marginBottom: 18,
       shadowColor: '#000',
       shadowOpacity: 0.15,
       shadowOffset: { width: 0, height: 8 },
@@ -222,7 +384,7 @@ const createStyles = (colors: ReturnType<typeof useThemeColors>) =>
     },
     pedidosBadge: {
       paddingVertical: 10,
-      paddingHorizontal: 13,
+      paddingHorizontal: 10,
       borderRadius: 12,
       backgroundColor: 'transparent',
       flexDirection: 'row',
