@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import React, { useMemo, useState } from "react";
+import { View, Text, ActivityIndicator, TouchableOpacity, Modal, Pressable } from "react-native";
 import { router, Stack } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import WinEmergenteEditar from "../../../components/clientesPages/WinEmergenteEditar";
@@ -15,12 +15,44 @@ export default function ClienteDetallado() {
   const {
     cliente,
     isLoading,
+    isAdmin,
     existingEmails,
     editarVisible,
     setEditarVisible,
     handleDeleteCliente,
     handleUpdateCliente,
+    handleUpdateReservaEstado,
   } = useClienteDetalle();
+
+  const [estadoModalVisible, setEstadoModalVisible] = useState(false);
+  const [selectedReservaCodigo, setSelectedReservaCodigo] = useState<string | null>(null);
+  const [selectedReservaEstado, setSelectedReservaEstado] = useState<string | null>(null);
+
+  const ESTADOS_RESERVA = [
+    "PREPARADA",
+    "ENTREGADA",
+    "DEVUELTA",
+    "REVISION",
+    "FINALIZADA",
+    "CANCELADA",
+  ] as const;
+
+  const openEstadoModal = (codigoReserva: string, estadoActual: string) => {
+    if (!isAdmin) return;
+    setSelectedReservaCodigo(codigoReserva);
+    setSelectedReservaEstado(estadoActual);
+    setEstadoModalVisible(true);
+  };
+
+  const handleSelectNuevoEstado = async (nuevoEstado: string) => {
+    if (!selectedReservaCodigo || nuevoEstado === selectedReservaEstado) {
+      setEstadoModalVisible(false);
+      return;
+    }
+
+    await handleUpdateReservaEstado(selectedReservaCodigo, nuevoEstado);
+    setEstadoModalVisible(false);
+  };
 
   if (isLoading) {
     return (
@@ -96,32 +128,44 @@ export default function ClienteDetallado() {
         ) : (
           (cliente.pedidos ?? []).map((p, i) => {
             const [codigoRaw, rangoRaw, estadoRaw] = p.split("·").map((t) => t.trim());
-            const codigo = codigoRaw || "Reserva";
+            const codigoTexto = codigoRaw || "Reserva";
+            const codigoReserva = codigoTexto.replace(/^Reserva\s*/i, "").trim();
             const rango = rangoRaw || "";
             const estado = estadoRaw || "";
+
+            const statusPill = !!estado && (
+              <View
+                style={[
+                  s.pedidoStatusPill,
+                  estado === "PREPARADA" && { backgroundColor: "rgba(59, 130, 246, 0.15)", borderColor: "#3B82F6" },
+                  estado === "ENTREGADA" && { backgroundColor: "rgba(16, 185, 129, 0.15)", borderColor: "#10B981" },
+                  estado === "DEVUELTA" && { backgroundColor: "rgba(37, 99, 235, 0.12)", borderColor: "#2563EB" },
+                  estado === "REVISION" && { backgroundColor: "rgba(245, 158, 11, 0.15)", borderColor: "#F59E0B" },
+                  estado === "FINALIZADA" && { backgroundColor: "rgba(22, 163, 74, 0.18)", borderColor: "#16A34A" },
+                  estado === "CANCELADA" && { backgroundColor: colors.errorButton, borderColor: colors.errorBorder },
+                ]}
+              >
+                <Text style={s.pedidoStatusText}>{estado}</Text>
+              </View>
+            );
 
             return (
               <View key={i} style={s.pedidoCard}>
                 <View style={s.pedidoHeader}>
                   <Feather name="shopping-bag" size={18} color={colors.iconMain} />
                   <View style={s.pedidoInfo}>
-                    <Text style={s.pedidoTitle}>{codigo}</Text>
+                    <Text style={s.pedidoTitle}>{codigoTexto}</Text>
                     {!!rango && <Text style={s.pedidoSubtitle}>{rango}</Text>}
                   </View>
-                  {!!estado && (
-                    <View
-                      style={[
-                        s.pedidoStatusPill,
-                        estado === "PREPARADA" && { backgroundColor: "rgba(59, 130, 246, 0.15)", borderColor: "#3B82F6" },
-                        estado === "ENTREGADA" && { backgroundColor: "rgba(16, 185, 129, 0.15)", borderColor: "#10B981" },
-                        estado === "DEVUELTA" && { backgroundColor: "rgba(37, 99, 235, 0.12)", borderColor: "#2563EB" },
-                        estado === "REVISION" && { backgroundColor: "rgba(245, 158, 11, 0.15)", borderColor: "#F59E0B" },
-                        estado === "FINALIZADA" && { backgroundColor: "rgba(22, 163, 74, 0.18)", borderColor: "#16A34A" },
-                        estado === "CANCELADA" && { backgroundColor: colors.errorButton, borderColor: colors.errorBorder },
-                      ]}
+                  {isAdmin && codigoReserva ? (
+                    <TouchableOpacity
+                      onPress={() => openEstadoModal(codigoReserva, estado)}
+                      activeOpacity={0.8}
                     >
-                      <Text style={s.pedidoStatusText}>{estado}</Text>
-                    </View>
+                      {statusPill}
+                    </TouchableOpacity>
+                  ) : (
+                    statusPill
                   )}
                 </View>
               </View>
@@ -140,6 +184,60 @@ export default function ClienteDetallado() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {isAdmin && estadoModalVisible && (
+        <Modal
+          transparent
+          animationType="fade"
+          visible={estadoModalVisible}
+          onRequestClose={() => setEstadoModalVisible(false)}
+        >
+          <Pressable
+            style={s.modalBackdrop}
+            onPress={() => setEstadoModalVisible(false)}
+          />
+          <View style={s.modalContainer}>
+            <View style={s.modalCard}>
+              <Text style={s.modalTitle}>Cambiar estado de la reserva</Text>
+              <Text style={s.modalSubtitle}>
+                Código: {selectedReservaCodigo ?? "-"}
+              </Text>
+
+              <View style={s.modalOptions}>
+                {ESTADOS_RESERVA.map((estado) => {
+                  const isActive = estado === selectedReservaEstado;
+                  return (
+                    <TouchableOpacity
+                      key={estado}
+                      style={[
+                        s.modalOption,
+                        isActive && s.modalOptionActive,
+                      ]}
+                      onPress={() => handleSelectNuevoEstado(estado)}
+                    >
+                      <Text
+                        style={[
+                          s.modalOptionText,
+                          isActive && s.modalOptionTextActive,
+                        ]}
+                      >
+                        {estado}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <TouchableOpacity
+                style={s.modalCancelButton}
+                onPress={() => setEstadoModalVisible(false)}
+              >
+                <Text style={s.modalCancelText}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
 
       {/* Modal de edición */}
       {editarVisible && (

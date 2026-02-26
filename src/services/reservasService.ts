@@ -110,6 +110,18 @@ export const reservasService = {
     if (error) throw error;
   },
 
+  async updateEstadoReservaByCodigoAdmin(
+    codigoReserva: string,
+    nuevoEstado: string,
+  ) {
+    const { error } = await supabase
+      .from("reservas")
+      .update({ estado: nuevoEstado })
+      .eq("codigo_reserva", codigoReserva);
+
+    if (error) throw error;
+  },
+
   async updateFechasReserva(
     id: number,
     usuarioId: string,

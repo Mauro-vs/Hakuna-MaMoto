@@ -8,14 +8,18 @@ import {
   useDeleteCliente,
   useUpdateCliente,
 } from "../hooks/useClientes";
+import { useUserStore } from "../store/userStore";
+import { reservasService } from "../services/reservasService";
 
 export const useClienteDetalle = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const clientId = Number(id);
 
   const colors = useThemeColors();
+  const user = useUserStore((state) => state.user);
+  const isAdmin = user?.rol === "ADMIN";
   const [editarVisible, setEditarVisible] = useState(false);
-  const { data: cliente, isLoading } = useCliente(clientId);
+  const { data: cliente, isLoading, refetch } = useCliente(clientId);
   const { data: list } = useClientesList();
   const updateCliente = useUpdateCliente();
   const deleteCliente = useDeleteCliente();
@@ -71,15 +75,46 @@ export const useClienteDetalle = () => {
     });
   };
 
+  const handleUpdateReservaEstado = async (
+    codigoReserva: string,
+    nuevoEstado: string,
+  ) => {
+    if (!isAdmin) {
+      Alert.alert(
+        "Acción no permitida",
+        "Solo los administradores pueden cambiar el estado de las reservas.",
+      );
+      return;
+    }
+
+    if (!codigoReserva.trim()) return;
+
+    try {
+      await reservasService.updateEstadoReservaByCodigoAdmin(
+        codigoReserva.trim(),
+        nuevoEstado,
+      );
+      await refetch();
+    } catch (error) {
+      console.error(error);
+      Alert.alert(
+        "Error",
+        "No se pudo actualizar el estado de la reserva. Inténtalo de nuevo.",
+      );
+    }
+  };
+
   return {
     colors,
     clientId,
     cliente,
     isLoading,
+    isAdmin,
     existingEmails,
     editarVisible,
     setEditarVisible,
     handleDeleteCliente,
     handleUpdateCliente,
+    handleUpdateReservaEstado,
   };
 };

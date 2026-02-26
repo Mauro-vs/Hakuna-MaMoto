@@ -99,7 +99,7 @@ export const createModelosStyles = (colors: ModelosTheme) =>
       backgroundColor: colors.primaryButton,
       width: 48,
       height: 48,
-      borderRadius: 24,
+      borderRadius: 12,
       alignItems: "center",
       justifyContent: "center",
       elevation: 4,

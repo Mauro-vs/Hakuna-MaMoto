@@ -122,4 +122,70 @@ export const createClienteDetalleStyles = (colors: ClienteDetalleTheme) =>
       shadowRadius: 5,
       elevation: 3,
     },
+    modalBackdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0,0,0,0.4)",
+    },
+    modalContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    modalCard: {
+      width: "90%",
+      maxWidth: 420,
+      backgroundColor: colors.cardBackground,
+      borderRadius: 16,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: colors.borderMain,
+    },
+    modalTitle: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: colors.textTitle,
+      marginBottom: 4,
+    },
+    modalSubtitle: {
+      fontSize: 13,
+      color: colors.grayLabelText,
+      marginBottom: 12,
+    },
+    modalOptions: {
+      marginTop: 4,
+      marginBottom: 12,
+      gap: 6,
+    },
+    modalOption: {
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: colors.borderMain,
+      backgroundColor: colors.backgroundMain,
+    },
+    modalOptionActive: {
+      borderColor: colors.primaryButton,
+      backgroundColor: "rgba(37, 99, 235, 0.08)",
+    },
+    modalOptionText: {
+      fontSize: 13,
+      color: colors.textBody,
+    },
+    modalOptionTextActive: {
+      fontWeight: "700",
+      color: colors.primaryButton,
+    },
+    modalCancelButton: {
+      marginTop: 4,
+      alignSelf: "flex-end",
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 999,
+    },
+    modalCancelText: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: colors.grayLabelText,
+    },
   });
