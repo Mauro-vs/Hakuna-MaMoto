@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../../../store/preferencesStore';
 import { MenuOption } from '../../../components/profilePages/menuOption';
 import { createProfileStyles } from '../../../style/profile.styles';
-import { useProfileScreen } from '../../../useControllers/useProfileScreen';
+import { useProfileScreen } from '../../../hooks/useProfileScreen';
 
 
 export default function Profile() {

@@ -5,7 +5,7 @@ import { router, Stack } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useThemeColors } from "../../../store/preferencesStore";
 import { createModeloDetalleStyles } from "../../../style/modeloDetalle.styles";
-import { useModeloDetalle } from "../../../useControllers/useModeloDetalle";
+import { useModeloDetalle } from "../../../hooks/useModeloDetalle";
 
 export default function ModeloDetalle() {
   const colors = useThemeColors();

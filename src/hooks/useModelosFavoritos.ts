@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useModelosList } from "../hooks/useModelos";
+import { useModelosList } from "./useModelos";
 import { useFavoritesStore } from "../store/favoritesStore";
 import type { Modelo } from "../data/Modelos";
 

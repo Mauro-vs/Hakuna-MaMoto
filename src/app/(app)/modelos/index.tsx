@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../../store/preferencesStore";
 import { ModeloCard } from "../../../components/modelosPages/ModeloCard";
 import { createModelosStyles } from "../../../style/modelos.styles";
-import { useModelosScreen } from "../../../useControllers/useModelosScreen";
+import { useModelosScreen } from "../../../hooks/useModelosScreen";
 
 export default function ModelosScreen() {
   const colors = useThemeColors();

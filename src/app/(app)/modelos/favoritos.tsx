@@ -4,7 +4,7 @@ import { Stack } from "expo-router";
 import { useThemeColors } from "../../../store/preferencesStore";
 import { ModeloCard } from "../../../components/modelosPages/ModeloCard";
 import { createModelosFavoritosStyles } from "../../../style/modelosFavoritos.styles";
-import { useModelosFavoritos } from "../../../useControllers/useModelosFavoritos";
+import { useModelosFavoritos } from "../../../hooks/useModelosFavoritos";
 
 export default function FavoritosScreen() {
   const colors = useThemeColors();

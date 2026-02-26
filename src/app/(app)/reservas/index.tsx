@@ -5,7 +5,7 @@ import { Stack } from "expo-router";
 import { useThemeColors } from "../../../store/preferencesStore";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { createReservasStyles } from "../../../style/reservas.styles";
-import { useReservas } from "../../../useControllers/useReservas";
+import { useReservas } from "../../../hooks/useReservas";
 
 export default function ReservasScreen() {
   const colors = useThemeColors();

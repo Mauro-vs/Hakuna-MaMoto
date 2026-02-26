@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../../store/preferencesStore';
 import { AdminPanel } from '../../components/home/adminPanel';
 import { createHomeStyles } from '../../style/home.styles';
-import { useHome } from '../../useControllers/useHome';
+import { useHome } from '../../hooks/useHome';
 
 
 export default function Home() {

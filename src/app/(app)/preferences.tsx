@@ -4,7 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import { useThemeColors } from "../../store/preferencesStore";
 import { Feather } from "@expo/vector-icons";
 import { createPreferencesStyles } from "../../style/preferences.styles";
-import { usePreferencesScreen } from "../../useControllers/usePreferencesScreen";
+import { usePreferencesScreen } from "../../hooks/usePreferencesScreen";
 
 export default function Preferences() {
   const router = useRouter();

@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useFocusEffect } from "@react-navigation/native";
 import { useThemeColors } from "../store/preferencesStore";
-import { useModelo } from "../hooks/useModelos";
+import { useModelo } from "./useModelos";
 import { useUserStore } from "../store/userStore";
 import { reservasService } from "../services/reservasService";
 

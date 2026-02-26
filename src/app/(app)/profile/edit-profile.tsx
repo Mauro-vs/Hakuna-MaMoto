@@ -12,7 +12,7 @@ import { Stack } from "expo-router";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../../store/preferencesStore";
 import { createEditProfileStyles } from "../../../style/editProfile.styles";
-import { useEditProfileScreen } from "../../../useControllers/useEditProfileScreen";
+import { useEditProfileScreen } from "../../../hooks/useEditProfileScreen";
 
 export default function EditProfile() {
   const colors = useThemeColors();

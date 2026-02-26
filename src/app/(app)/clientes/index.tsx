@@ -5,7 +5,7 @@ import { PopUpCrear } from "../../../components/clientesPages/PopUpCrear";
 import { ListaClienteItem } from "../../../components/clientesPages/ListaClientes";
 import { useThemeColors } from "../../../store/preferencesStore";
 import { createClientesHomeStyles } from "../../../style/clientesHome.styles";
-import { useClientesHome } from "../../../useControllers/useClientesHome";
+import { useClientesHome } from "../../../hooks/useClientesHome";
 
 export default function HomeClientes() {
   const colors = useThemeColors();

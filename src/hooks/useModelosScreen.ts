@@ -4,7 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system/legacy";
 import { decode } from "base64-arraybuffer";
 import { useThemeColors } from "../store/preferencesStore";
-import { useModelosList } from "../hooks/useModelos";
+import { useModelosList } from "./useModelos";
 import { useUserStore } from "../store/userStore";
 import { modelosService } from "../services/modelosService";
 import { supabase } from "../services/supabaseClient";

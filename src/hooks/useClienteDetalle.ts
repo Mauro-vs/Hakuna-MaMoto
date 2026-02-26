@@ -7,7 +7,7 @@ import {
   useClientesList,
   useDeleteCliente,
   useUpdateCliente,
-} from "../hooks/useClientes";
+} from "./useClientes";
 import { useUserStore } from "../store/userStore";
 import { reservasService } from "../services/reservasService";
 

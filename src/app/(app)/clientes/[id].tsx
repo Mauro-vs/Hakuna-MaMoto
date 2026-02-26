@@ -5,7 +5,7 @@ import { Feather } from "@expo/vector-icons";
 import WinEmergenteEditar from "../../../components/clientesPages/WinEmergenteEditar";
 import { useThemeColors } from "../../../store/preferencesStore";
 import { createClienteDetalleStyles } from "../../../style/clienteDetalle.styles";
-import { useClienteDetalle } from "../../../useControllers/useClienteDetalle";
+import { useClienteDetalle } from "../../../hooks/useClienteDetalle";
 
 
 

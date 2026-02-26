@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Redirect } from "expo-router";
 import { useThemeColors } from "../store/preferencesStore";
 import { useUserStore } from "../store/userStore";
-import { useClientesList, useCreateCliente } from "../hooks/useClientes";
+import { useClientesList, useCreateCliente } from "./useClientes";
 import type { Cliente } from "../data/Clientes";
 
 export const useClientesHome = () => {
